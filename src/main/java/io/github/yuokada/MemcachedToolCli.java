@@ -3,6 +3,7 @@ package io.github.yuokada;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,11 +37,11 @@ public class MemcachedToolCli implements Callable<Integer> {
 
     @Option(names = {"-h", "--host"}, description = "Cluster hostname.", defaultValue = "localhost",
         showDefaultValue = Visibility.ALWAYS)
-    private String configEndpoint;
+    private static String configEndpoint;
 
     @Option(names = {"-p", "--port"}, description = "Cluster port number.", defaultValue = "11211",
         showDefaultValue = Visibility.ALWAYS)
-    private int clusterPort;
+    private static int clusterPort;
 
     @Option(
         names = {"--execute-flush"},
@@ -67,10 +68,7 @@ public class MemcachedToolCli implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        logger.debug(String.format("server: %s:%d", configEndpoint, clusterPort));
-        InetSocketAddress address = new InetSocketAddress(configEndpoint, clusterPort);
-
-        MemcachedClient client = getMemcachedClient(configEndpoint, address);
+        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
         logger.debug("is Configuration Initialized?: " + client.isConfigurationInitialized());
         logger.debug(
             "is Configuration protocol supported?: " + client.isConfigurationProtocolSupported()
@@ -100,8 +98,28 @@ public class MemcachedToolCli implements Callable<Integer> {
         return 0;
     }
 
-    private MemcachedClient getMemcachedClient(String endpoint, InetSocketAddress address)
+    @Command(name = "stats")
+    public Integer stats() throws IOException {
+        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
+
+        Map<SocketAddress, Map<String, String>> stats = client.getStats();
+        Objects.requireNonNull(stats);
+        List<String> lines = new ArrayList<>();
+        stats.forEach((socketAddress, stat) -> {
+            stat
+                .forEach((k, v) -> {
+                    lines.add(String.format("%s -> %s", k, v));
+                });
+        });
+        lines.stream().sorted()
+            .forEach(System.out::println);
+        return 0;
+    }
+
+    private MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
         throws IOException {
+        logger.debug(String.format("server: %s:%d", configEndpoint, clusterPort));
+        InetSocketAddress address = new InetSocketAddress(configEndpoint, clusterPort);
         MemcachedClient client;
         if (isConfigEndpoint(endpoint)) {
             client = new MemcachedClient(
@@ -117,7 +135,8 @@ public class MemcachedToolCli implements Callable<Integer> {
         return client;
     }
 
-    private void executeFlush(MemcachedClient client) throws InterruptedException, ExecutionException {
+    private void executeFlush(MemcachedClient client)
+        throws InterruptedException, ExecutionException {
         logger.info("Execute flush command");
         OperationFuture<Boolean> flush = client.flush();
         if (flush.get()) {
