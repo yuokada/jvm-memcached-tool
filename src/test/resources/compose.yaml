@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  memcached:
+    image: memcached:1.6
+    command: memcached -m 256
+    ports:
+      - "11211:11211"
+    networks:
+      - memcached_network
+
+networks:
+  memcached_network:
+    driver: bridge
