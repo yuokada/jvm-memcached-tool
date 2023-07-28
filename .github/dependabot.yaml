@@ -4,4 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    open-pull-requests-limit: 5
+    # open-pull-requests-limit: 5
+    groups:
+      maven-plugin-dependencies:
+        patterns:
+          - "org.apache.maven.plugins*"
