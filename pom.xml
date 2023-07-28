@@ -17,6 +17,13 @@
     <slf4j.version>2.0.7</slf4j.version>
   </properties>
 
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/yuokada/jvm-memcached-tool</url>
+    </repository>
+  </distributionManagement>
+
   <dependencies>
     <dependency>
       <groupId>com.amazonaws</groupId>
