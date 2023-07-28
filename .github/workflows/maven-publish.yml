@@ -5,11 +5,11 @@ name: Maven Package
 
 # see: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 on:
-  release:
-    types: [created]
+  # release:
+  #   types: [created]
   push:
     tags:
-      - v0.**
+      - v0.0.**
 jobs:
   build:
 
