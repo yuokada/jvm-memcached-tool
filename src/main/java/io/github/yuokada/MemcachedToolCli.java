@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.MemcachedClient;
@@ -44,13 +46,6 @@ public class MemcachedToolCli implements Callable<Integer> {
     private static int clusterPort;
 
     @Option(
-        names = {"--execute-flush"},
-        description = "Execute flush command before writing records",
-        defaultValue = "false"
-    )
-    private boolean executeFlush;
-
-    @Option(
         names = {"--size"},
         description = "item size to write. 0 is random size"
     )
@@ -73,9 +68,6 @@ public class MemcachedToolCli implements Callable<Integer> {
         logger.debug(
             "is Configuration protocol supported?: " + client.isConfigurationProtocolSupported()
         );
-        if (executeFlush) {
-            executeFlush(client);
-        }
 
         if (itemSize == 0) {
             itemSize = FakeDataGenerator.getRandomNumber(1024);
@@ -116,6 +108,25 @@ public class MemcachedToolCli implements Callable<Integer> {
         return 0;
     }
 
+    @Command(name = "flush")
+    public Integer flush() throws IOException {
+        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
+
+        OperationFuture<Boolean> flushResult = client.flush();
+        try {
+            if (flushResult.get(15, TimeUnit.SECONDS)) {
+                System.out.printf("Keys on %s:%d are purged!%n", configEndpoint, clusterPort);
+                return 0;
+            } else {
+                System.err.println("Flush command failed. Please retry");
+                return 1;
+            }
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            System.err.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     private MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
         throws IOException {
         logger.debug(String.format("server: %s:%d", configEndpoint, clusterPort));
@@ -133,16 +144,5 @@ public class MemcachedToolCli implements Callable<Integer> {
             );
         }
         return client;
-    }
-
-    private void executeFlush(MemcachedClient client)
-        throws InterruptedException, ExecutionException {
-        logger.info("Execute flush command");
-        OperationFuture<Boolean> flush = client.flush();
-        if (flush.get()) {
-            logger.info("Succeeded flush command");
-        } else {
-            logger.info("Failed flush command");
-        }
     }
 }
