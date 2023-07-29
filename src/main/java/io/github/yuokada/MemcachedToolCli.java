@@ -1,10 +1,11 @@
 package io.github.yuokada;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +13,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.Collectors;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.MemcachedClient;
@@ -95,20 +95,32 @@ public class MemcachedToolCli implements Callable<Integer> {
 
     @Command(name = "stats")
     public Integer stats(
+        @Option(names = {"--json"},
+            description = "Flag to output with JSON format"
+        ) boolean jsonOutputFlag,
         @Parameters(arity = "1", paramLabel = "extra", defaultValue = "") String operation
     ) throws IOException {
         MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
         Map<SocketAddress, Map<String, String>> stats = fetchStats(client, operation);
         Objects.requireNonNull(stats);
-        List<String> lines = new ArrayList<>();
-        stats.forEach((socketAddress, stat) -> {
-            stat
-                .forEach((k, v) -> {
-                    lines.add(String.format("%s -> %s", k, v));
-                });
-        });
-        lines.stream().sorted()
-            .forEach(System.out::println);
+
+        if (jsonOutputFlag) {
+            Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .serializeNulls()
+                .create();
+            System.out.println(gson.toJson(stats));
+        } else {
+            List<String> lines = new ArrayList<>();
+            stats.forEach((socketAddress, stat) -> {
+                stat
+                    .forEach((k, v) -> {
+                        lines.add(String.format("%s -> %s", k, v));
+                    });
+            });
+            lines.stream().sorted()
+                .forEach(System.out::println);
+        }
         return 0;
     }
 
