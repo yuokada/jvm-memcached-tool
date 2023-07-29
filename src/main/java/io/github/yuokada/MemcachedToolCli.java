@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.MemcachedClient;
@@ -21,6 +23,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.Parameters;
 
 @Command(name = "memcached-tool",
     mixinStandardHelpOptions = true,
@@ -91,10 +94,11 @@ public class MemcachedToolCli implements Callable<Integer> {
     }
 
     @Command(name = "stats")
-    public Integer stats() throws IOException {
+    public Integer stats(
+        @Parameters(arity = "1", paramLabel = "extra", defaultValue = "") String operation
+    ) throws IOException {
         MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
-
-        Map<SocketAddress, Map<String, String>> stats = client.getStats();
+        Map<SocketAddress, Map<String, String>> stats = fetchStats(client, operation);
         Objects.requireNonNull(stats);
         List<String> lines = new ArrayList<>();
         stats.forEach((socketAddress, stat) -> {
@@ -106,6 +110,27 @@ public class MemcachedToolCli implements Callable<Integer> {
         lines.stream().sorted()
             .forEach(System.out::println);
         return 0;
+    }
+
+    private Map<SocketAddress, Map<String, String>> fetchStats(
+        MemcachedClient client,
+        String args) {
+        if (args.isEmpty()) {
+            return client.getStats();
+        } else {
+            StatsSubCommands subcommand;
+            try {
+                subcommand = StatsSubCommands.valueOf(args);
+            } catch (IllegalArgumentException e) {
+                List<String> availableCommands = StatsSubCommands.availableCommands();
+                String message = String.format(
+                    "Unsupported extra command: %s\nAvailable commands: %s", args,
+                    String.join(", ", availableCommands)
+                );
+                throw new IllegalArgumentException(message);
+            }
+            return client.getStats(subcommand.name());
+        }
     }
 
     @Command(name = "flush")
