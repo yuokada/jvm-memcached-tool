@@ -11,7 +11,7 @@
     <maven.compiler.target>11</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.plugin.validation>BRIEF</maven.plugin.validation>
-    <picocli.version>4.7.4</picocli.version>
+    <picocli.version>4.7.5</picocli.version>
     <slf4j.version>2.0.7</slf4j.version>
   </properties>
 
