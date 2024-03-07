@@ -66,30 +66,7 @@ public class MemcachedToolCli implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
-        logger.debug("is Configuration Initialized?: " + client.isConfigurationInitialized());
-        logger.debug(
-            "is Configuration protocol supported?: " + client.isConfigurationProtocolSupported()
-        );
-
-        if (itemSize == 0) {
-            itemSize = FakeDataGenerator.getRandomNumber(1024);
-            logger.debug(String.format("Number of item size: %d", itemSize));
-        }
-        for (int i = 0; i < itemSize; i++) {
-            client.set(String.format("key_%d", i), 3600, FakeDataGenerator.getFullName());
-        }
-
-        Map<SocketAddress, Map<String, String>> stats = client.getStats();
-        Objects.requireNonNull(stats);
-        stats.forEach((socketAddress, stat) -> {
-            stat
-                .forEach((k, v) -> {
-                    if (k.contains("item")) {
-                        System.out.printf("%s -> %s%n", k, v);
-                    }
-                });
-        });
+        CommandLine.usage(this, System.out);
         return 0;
     }
 
@@ -162,6 +139,35 @@ public class MemcachedToolCli implements Callable<Integer> {
             System.err.println(e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    @Command(name = "generate")
+    public Integer generate() throws IOException {
+        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
+        logger.debug("is Configuration Initialized?: " + client.isConfigurationInitialized());
+        logger.debug(
+            "is Configuration protocol supported?: " + client.isConfigurationProtocolSupported()
+        );
+
+        if (itemSize == 0) {
+            itemSize = FakeDataGenerator.getRandomNumber(1024);
+            logger.debug(String.format("Number of item size: %d", itemSize));
+        }
+        for (int i = 0; i < itemSize; i++) {
+            client.set(String.format("key_%d", i), 3600, FakeDataGenerator.getFullName());
+        }
+
+        Map<SocketAddress, Map<String, String>> stats = client.getStats();
+        Objects.requireNonNull(stats);
+        stats.forEach((socketAddress, stat) -> {
+            stat
+                .forEach((k, v) -> {
+                    if (k.contains("item")) {
+                        System.out.printf("%s -> %s%n", k, v);
+                    }
+                });
+        });
+        return 0;
     }
 
     private MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
