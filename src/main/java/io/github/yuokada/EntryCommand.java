@@ -1,26 +1,19 @@
 package io.github.yuokada;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.github.yuokada.subcommand.FlushCommand;
+import io.github.yuokada.subcommand.StatsCommand;
 import io.github.yuokada.util.FakeDataGenerator;
-import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.MemcachedClient;
-import net.spy.memcached.internal.OperationFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -28,17 +21,17 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
 @QuarkusMain
 @CommandLine.Command(name = "memcached-tool",
     subcommands = {
+        StatsCommand.class,
         FlushCommand.class
     },
     mixinStandardHelpOptions = true,
     version = "memcached-tool 0.1",
     description = "Simple tool to handle memcached")
-public class EntryCommand implements QuarkusApplication, Callable<Integer> {
+public class EntryCommand implements Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryCommand.class);
     @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
@@ -59,10 +52,6 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
     boolean versionRequested;
     @Option(names = "--help", usageHelp = true, description = "display this help and exit")
     boolean help;
-
-    private static boolean isConfigEndpoint(String host) {
-        return host.contains(".cfg.");
-    }
 
     public static void main(String[] args) throws IOException {
         int exitCode = new CommandLine(new EntryCommand()).execute(args);
@@ -110,58 +99,6 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
         return 0;
     }
 
-    @Command(name = "stats")
-    public Integer stats(
-        @Option(names = {"--json"},
-            description = "Flag to output with JSON format"
-        ) boolean jsonOutputFlag,
-        @Parameters(arity = "1", paramLabel = "extra", defaultValue = "") String operation
-    ) throws IOException {
-        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
-        Map<SocketAddress, Map<String, String>> stats = fetchStats(client, operation);
-        Objects.requireNonNull(stats);
-
-        if (jsonOutputFlag) {
-            Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .serializeNulls()
-                .create();
-            System.out.println(gson.toJson(stats));
-        } else {
-            List<String> lines = new ArrayList<>();
-            stats.forEach((socketAddress, stat) -> {
-                stat
-                    .forEach((k, v) -> {
-                        lines.add(String.format("%s -> %s", k, v));
-                    });
-            });
-            lines.stream().sorted()
-                .forEach(System.out::println);
-        }
-        return 0;
-    }
-
-    private Map<SocketAddress, Map<String, String>> fetchStats(
-        MemcachedClient client,
-        String args) {
-        if (args.isEmpty()) {
-            return client.getStats();
-        } else {
-            StatsSubCommands subcommand;
-            try {
-                subcommand = StatsSubCommands.valueOf(args);
-            } catch (IllegalArgumentException e) {
-                List<String> availableCommands = StatsSubCommands.availableCommands();
-                String message = String.format(
-                    "Unsupported extra command: %s\nAvailable commands: %s", args,
-                    String.join(", ", availableCommands)
-                );
-                throw new IllegalArgumentException(message);
-            }
-            return client.getStats(subcommand.name());
-        }
-    }
-
     private MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
         throws IOException {
         logger.debug(String.format("server: %s:%d", configEndpoint, clusterPort));
@@ -181,9 +118,7 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
         return client;
     }
 
-    @Override
-    public int run(String... args) throws Exception {
-        System.out.println("Hello world.");
-        return 0;
+    private static boolean isConfigEndpoint(String host) {
+        return host.contains(".cfg.");
     }
 }

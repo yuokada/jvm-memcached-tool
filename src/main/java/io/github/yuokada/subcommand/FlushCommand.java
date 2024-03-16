@@ -26,7 +26,8 @@ public class FlushCommand implements Callable<Integer> {
         try {
             client = getMemcachedClient(entryCommand.configEndpoint, entryCommand.clusterPort);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ExitCode.SOFTWARE;
+            // throw new RuntimeException(e);
         }
 
         OperationFuture<Boolean> flushResult = client.flush();
