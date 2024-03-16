@@ -2,6 +2,9 @@ package io.github.yuokada;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.yuokada.subcommand.FlushCommand;
+import io.quarkus.runtime.QuarkusApplication;
+import io.quarkus.runtime.annotations.QuarkusMain;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -21,51 +24,64 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "memcached-tool",
+@QuarkusMain
+@CommandLine.Command(name = "memcached-tool",
+    subcommands = {
+        FlushCommand.class
+    },
     mixinStandardHelpOptions = true,
     version = "memcached-tool 0.1",
     description = "Simple tool to handle memcached")
-public class MemcachedToolCli implements Callable<Integer> {
+public class EntryCommand implements QuarkusApplication, Callable<Integer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(MemcachedToolCli.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(EntryCommand.class);
+    @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
+        showDefaultValue = Visibility.ALWAYS)
+    public static String configEndpoint;
+    @Option(names = {"-p", "--port"}, description = "Cluster port number.", defaultValue = "11211",
+        showDefaultValue = Visibility.ALWAYS)
+    public static int clusterPort;
     @Option(
         names = {"-v", "--verbose"},
         description = "Enable verbose mode.",
         defaultValue = "false"
     )
-    private boolean verbose;
-
-    @Option(names = {"-h", "--host"}, description = "Cluster hostname.", defaultValue = "localhost",
-        showDefaultValue = Visibility.ALWAYS)
-    private static String configEndpoint;
-
-    @Option(names = {"-p", "--port"}, description = "Cluster port number.", defaultValue = "11211",
-        showDefaultValue = Visibility.ALWAYS)
-    private static int clusterPort;
-
-    @Option(
-        names = {"--size"},
-        description = "item size to write. 0 is random size"
-    )
-    private int itemSize = 0;
-
+    public boolean verbose;
+    @Option(names = {"-V", "--version"},
+        versionHelp = true,
+        description = "print version information and exit")
+    boolean versionRequested;
+    @Option(names = "--help", usageHelp = true, description = "display this help and exit")
+    boolean help;
 
     private static boolean isConfigEndpoint(String host) {
         return host.contains(".cfg.");
     }
 
     public static void main(String[] args) throws IOException {
-        int exitCode = new CommandLine(new MemcachedToolCli()).execute(args);
+        int exitCode = new CommandLine(new EntryCommand()).execute(args);
         System.exit(exitCode);
     }
 
     @Override
     public Integer call() throws Exception {
+        CommandLine.usage(this, System.out);
+        return ExitCode.OK;
+    }
+
+    @Command(name = "generate")
+    public Integer generate(
+        @Option(
+            names = {"--size"}, description = "item size to write. 0 is random size",
+            defaultValue = "0"
+        )
+        int itemSize
+    ) throws IOException {
         MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
         logger.debug("is Configuration Initialized?: " + client.isConfigurationInitialized());
         logger.debug(
@@ -73,7 +89,7 @@ public class MemcachedToolCli implements Callable<Integer> {
         );
 
         if (itemSize == 0) {
-            itemSize = FakeDataGenerator.getRandomNumber(1024);
+            itemSize = FakeDataGenerator.getRandomNumber();
             logger.debug(String.format("Number of item size: %d", itemSize));
         }
         for (int i = 0; i < itemSize; i++) {
@@ -181,5 +197,11 @@ public class MemcachedToolCli implements Callable<Integer> {
             );
         }
         return client;
+    }
+
+    @Override
+    public int run(String... args) throws Exception {
+        System.out.println("Hello world.");
+        return 0;
     }
 }

@@ -14,6 +14,10 @@ public class FakeDataGenerator {
         throw new RuntimeException("Initialization is not allowed");
     }
 
+    static int getRandomNumber() {
+        return getRandomNumber(1024);
+    }
+
     static int getRandomNumber(int maxInt) {
         return faker.number().numberBetween(0, maxInt);
     }
