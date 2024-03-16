@@ -4,22 +4,24 @@ import static io.github.yuokada.MemcachedClientProvider.getMemcachedClient;
 
 import io.github.yuokada.EntryCommand;
 import java.io.IOException;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
 import picocli.CommandLine;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.ParentCommand;
 
-@CommandLine.Command(name = "flush_bang", description = "Flush items on memcached!")
-public class FlushCommand implements Runnable {
+@CommandLine.Command(name = "flush", description = "Flush items on memcached!")
+public class FlushCommand implements Callable<Integer> {
 
     @ParentCommand
     private EntryCommand entryCommand;
 
     @Override
-    public void run() {
+    public Integer call() {
         MemcachedClient client = null;
         try {
             client = getMemcachedClient(entryCommand.configEndpoint, entryCommand.clusterPort);
@@ -32,10 +34,10 @@ public class FlushCommand implements Runnable {
             if (flushResult.get(15, TimeUnit.SECONDS)) {
                 System.out.printf("Keys on %s:%d are purged!%n", entryCommand.configEndpoint,
                     entryCommand.clusterPort);
-                return;
+                return ExitCode.OK;
             } else {
                 System.err.println("Flush command failed. Please retry");
-                return;
+                return ExitCode.SOFTWARE;
             }
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
             System.err.println(e.getMessage());

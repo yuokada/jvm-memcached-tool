@@ -43,10 +43,10 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
     private static final Logger logger = LoggerFactory.getLogger(EntryCommand.class);
     @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
         showDefaultValue = Visibility.ALWAYS)
-    public static String configEndpoint;
+    public String configEndpoint;
     @Option(names = {"-p", "--port"}, description = "Cluster port number.", defaultValue = "11211",
         showDefaultValue = Visibility.ALWAYS)
-    public static int clusterPort;
+    public int clusterPort;
     @Option(
         names = {"-v", "--verbose"},
         description = "Enable verbose mode.",
@@ -159,25 +159,6 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
                 throw new IllegalArgumentException(message);
             }
             return client.getStats(subcommand.name());
-        }
-    }
-
-    @Command(name = "flush")
-    public Integer flush() throws IOException {
-        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
-
-        OperationFuture<Boolean> flushResult = client.flush();
-        try {
-            if (flushResult.get(15, TimeUnit.SECONDS)) {
-                System.out.printf("Keys on %s:%d are purged!%n", configEndpoint, clusterPort);
-                return 0;
-            } else {
-                System.err.println("Flush command failed. Please retry");
-                return 1;
-            }
-        } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            System.err.println(e.getMessage());
-            throw new RuntimeException(e);
         }
     }
 
