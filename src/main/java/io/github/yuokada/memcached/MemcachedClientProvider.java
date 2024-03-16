@@ -1,4 +1,4 @@
-package io.github.yuokada;
+package io.github.yuokada.memcached;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
@@ -24,7 +24,7 @@ public class MemcachedClientProvider {
     public static MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
         throws IOException {
         String configEndpoint = "localhost";
-        logger.debug(String.format("server: %s:%d", configEndpoint, clusterPort));
+        logger.warn(String.format("server: %s:%d", configEndpoint, clusterPort));
         InetSocketAddress address = new InetSocketAddress(configEndpoint, clusterPort);
         MemcachedClient client;
         if (isConfigEndpoint(endpoint)) {

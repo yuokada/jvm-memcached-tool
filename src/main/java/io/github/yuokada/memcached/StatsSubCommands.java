@@ -1,4 +1,4 @@
-package io.github.yuokada;
+package io.github.yuokada.memcached;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,7 +9,7 @@ public enum StatsSubCommands {
     items("items"),
     settings("settings");
 
-    private String name;
+    private final String name;
 
     StatsSubCommands(String name) {
         this.name = name;
