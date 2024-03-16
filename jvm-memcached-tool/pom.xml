@@ -90,6 +90,9 @@
             </goals>
           </execution>
         </executions>
+        <configuration>
+          <finalName>memcached-tool</finalName>
+        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
