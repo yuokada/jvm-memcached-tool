@@ -1,8 +1,10 @@
 package io.github.yuokada;
 
 import io.github.yuokada.subcommand.FlushCommand;
+import io.github.yuokada.subcommand.GenerateCommand;
 import io.github.yuokada.subcommand.StatsCommand;
 import io.github.yuokada.util.FakeDataGenerator;
+import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -25,6 +27,7 @@ import picocli.CommandLine.Option;
 @QuarkusMain
 @CommandLine.Command(name = "memcached-tool",
     subcommands = {
+        GenerateCommand.class,
         StatsCommand.class,
         FlushCommand.class
     },
@@ -50,7 +53,8 @@ public class EntryCommand implements Callable<Integer> {
         versionHelp = true,
         description = "print version information and exit")
     boolean versionRequested;
-    @Option(names = "--help", usageHelp = true, description = "display this help and exit")
+
+    @Option(names = {"--help", "-h"}, usageHelp = true)
     boolean help;
 
     public static void main(String[] args) throws IOException {
@@ -61,64 +65,7 @@ public class EntryCommand implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         CommandLine.usage(this, System.out);
+        Quarkus.waitForExit();
         return ExitCode.OK;
-    }
-
-    @Command(name = "generate")
-    public Integer generate(
-        @Option(
-            names = {"--size"}, description = "item size to write. 0 is random size",
-            defaultValue = "0"
-        )
-        int itemSize
-    ) throws IOException {
-        MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
-        logger.debug("is Configuration Initialized?: " + client.isConfigurationInitialized());
-        logger.debug(
-            "is Configuration protocol supported?: " + client.isConfigurationProtocolSupported()
-        );
-
-        if (itemSize == 0) {
-            itemSize = FakeDataGenerator.getRandomNumber();
-            logger.debug(String.format("Number of item size: %d", itemSize));
-        }
-        for (int i = 0; i < itemSize; i++) {
-            client.set(String.format("key_%d", i), 3600, FakeDataGenerator.getFullName());
-        }
-
-        Map<SocketAddress, Map<String, String>> stats = client.getStats();
-        Objects.requireNonNull(stats);
-        stats.forEach((socketAddress, stat) -> {
-            stat
-                .forEach((k, v) -> {
-                    if (k.contains("item")) {
-                        System.out.printf("%s -> %s%n", k, v);
-                    }
-                });
-        });
-        return 0;
-    }
-
-    private MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
-        throws IOException {
-        logger.debug(String.format("server: %s:%d", configEndpoint, clusterPort));
-        InetSocketAddress address = new InetSocketAddress(configEndpoint, clusterPort);
-        MemcachedClient client;
-        if (isConfigEndpoint(endpoint)) {
-            client = new MemcachedClient(
-                new BinaryConnectionFactory(ClientMode.Dynamic),
-                List.of(address)
-            );
-        } else {
-            client = new MemcachedClient(
-                new BinaryConnectionFactory(ClientMode.Static),
-                List.of(address)
-            );
-        }
-        return client;
-    }
-
-    private static boolean isConfigEndpoint(String host) {
-        return host.contains(".cfg.");
     }
 }

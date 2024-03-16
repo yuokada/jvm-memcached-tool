@@ -35,7 +35,6 @@ public class StatsCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws IOException {
-        System.out.println("Stats command is called");
         MemcachedClient client = getMemcachedClient(
             entryCommand.configEndpoint, entryCommand.clusterPort);
         Map<SocketAddress, Map<String, String>> stats = fetchStats(client, operation);
