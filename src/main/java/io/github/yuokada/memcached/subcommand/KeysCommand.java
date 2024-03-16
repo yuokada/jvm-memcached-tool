@@ -53,6 +53,11 @@ public class KeysCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws IOException {
+        if (limit < 0) {
+            System.err.println("Limit must be greater than or equal to 0");
+            return ExitCode.USAGE;
+        }
+
         if (limit > 0) {
             message.concat(String.format(" (limiting to %d keys)", limit));
         }
