@@ -1,11 +1,10 @@
-package io.github.yuokada.subcommand;
-
-import static io.github.yuokada.MemcachedClientProvider.getMemcachedClient;
+package io.github.yuokada.memcached.subcommand;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.yuokada.EntryCommand;
-import io.github.yuokada.util.FakeDataGenerator;
+import io.github.yuokada.memcached.EntryCommand;
+import io.github.yuokada.memcached.MemcachedClientProvider;
+import io.github.yuokada.memcached.util.FakeDataGenerator;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class GenerateCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws IOException {
-        MemcachedClient client = getMemcachedClient(
+        MemcachedClient client = MemcachedClientProvider.getMemcachedClient(
             entryCommand.configEndpoint,
             entryCommand.clusterPort
         );

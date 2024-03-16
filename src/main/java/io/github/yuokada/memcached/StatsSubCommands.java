@@ -1,4 +1,4 @@
-package io.github.yuokada;
+package io.github.yuokada.memcached;
 
 import java.util.List;
 import java.util.stream.Collectors;

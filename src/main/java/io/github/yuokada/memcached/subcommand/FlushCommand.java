@@ -1,8 +1,8 @@
-package io.github.yuokada.subcommand;
+package io.github.yuokada.memcached.subcommand;
 
-import static io.github.yuokada.MemcachedClientProvider.getMemcachedClient;
+import static io.github.yuokada.memcached.MemcachedClientProvider.getMemcachedClient;
 
-import io.github.yuokada.EntryCommand;
+import io.github.yuokada.memcached.EntryCommand;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;

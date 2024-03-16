@@ -1,4 +1,4 @@
-package io.github.yuokada;
+package io.github.yuokada.memcached;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;

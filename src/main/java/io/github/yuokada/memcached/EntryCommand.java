@@ -1,8 +1,8 @@
-package io.github.yuokada;
+package io.github.yuokada.memcached;
 
-import io.github.yuokada.subcommand.FlushCommand;
-import io.github.yuokada.subcommand.GenerateCommand;
-import io.github.yuokada.subcommand.StatsCommand;
+import io.github.yuokada.memcached.subcommand.FlushCommand;
+import io.github.yuokada.memcached.subcommand.GenerateCommand;
+import io.github.yuokada.memcached.subcommand.StatsCommand;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import java.io.IOException;
