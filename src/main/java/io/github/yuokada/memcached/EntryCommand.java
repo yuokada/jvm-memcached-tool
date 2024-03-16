@@ -2,6 +2,7 @@ package io.github.yuokada.memcached;
 
 import io.github.yuokada.memcached.subcommand.FlushCommand;
 import io.github.yuokada.memcached.subcommand.GenerateCommand;
+import io.github.yuokada.memcached.subcommand.KeysCommand;
 import io.github.yuokada.memcached.subcommand.StatsCommand;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.annotations.QuarkusMain;
@@ -18,6 +19,7 @@ import picocli.CommandLine.Option;
 @CommandLine.Command(name = "memcached-tool",
     subcommands = {
         GenerateCommand.class,
+        KeysCommand.class,
         StatsCommand.class,
         FlushCommand.class
     },
