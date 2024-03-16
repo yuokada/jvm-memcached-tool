@@ -9,7 +9,7 @@ public enum StatsSubCommands {
     items("items"),
     settings("settings");
 
-    private String name;
+    private final String name;
 
     StatsSubCommands(String name) {
         this.name = name;

@@ -5,12 +5,9 @@ import static io.github.yuokada.MemcachedClientProvider.getMemcachedClient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.yuokada.EntryCommand;
-import io.github.yuokada.StatsSubCommands;
 import io.github.yuokada.util.FakeDataGenerator;
 import java.io.IOException;
 import java.net.SocketAddress;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -19,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 
 @CommandLine.Command(
