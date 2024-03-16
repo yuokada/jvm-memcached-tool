@@ -9,7 +9,10 @@ public enum StatsSubCommands {
     items("items"),
     settings("settings");
 
+    private String name;
+
     StatsSubCommands(String name) {
+        this.name = name;
     }
 
     public static List<String> availableCommands() {

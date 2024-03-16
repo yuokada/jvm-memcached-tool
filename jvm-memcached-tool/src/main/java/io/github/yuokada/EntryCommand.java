@@ -3,7 +3,6 @@ package io.github.yuokada;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.yuokada.subcommand.FlushCommand;
-import io.quarkus.picocli.runtime.annotations.TopCommand;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import java.io.IOException;
@@ -42,8 +41,6 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryCommand.class);
 
-    // private static final Logger logger = LoggerFactory.getLogger(MemcachedToolCli.class);
-
     @Option(
         names = {"-v", "--verbose"},
         description = "Enable verbose mode.",
@@ -67,12 +64,6 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
         showDefaultValue = Visibility.ALWAYS)
     public static int clusterPort;
 
-    @Option(
-        names = {"--size"},
-        description = "item size to write. 0 is random size"
-    )
-    private int itemSize = 0;
-
 
     private static boolean isConfigEndpoint(String host) {
         return host.contains(".cfg.");
@@ -85,33 +76,43 @@ public class EntryCommand implements QuarkusApplication, Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
+        CommandLine.usage(this, System.out);
+        return ExitCode.OK;
+    }
+
+    @Command(name = "generate")
+    public Integer generate(
+        @Option(
+            names = {"--size"}, description = "item size to write. 0 is random size",
+            defaultValue = "0"
+        )
+        int itemSize
+    ) throws IOException {
         MemcachedClient client = getMemcachedClient(configEndpoint, clusterPort);
         logger.debug("is Configuration Initialized?: " + client.isConfigurationInitialized());
         logger.debug(
             "is Configuration protocol supported?: " + client.isConfigurationProtocolSupported()
         );
-        System.out.println("--help to see available commands");
-        return ExitCode.OK;
 
-//        if (itemSize == 0) {
-//            itemSize = FakeDataGenerator.getRandomNumber(1024);
-//            logger.debug(String.format("Number of item size: %d", itemSize));
-//        }
-//        for (int i = 0; i < itemSize; i++) {
-//            client.set(String.format("key_%d", i), 3600, FakeDataGenerator.getFullName());
-//        }
-//
-//        Map<SocketAddress, Map<String, String>> stats = client.getStats();
-//        Objects.requireNonNull(stats);
-//        stats.forEach((socketAddress, stat) -> {
-//            stat
-//                .forEach((k, v) -> {
-//                    if (k.contains("item")) {
-//                        System.out.printf("%s -> %s%n", k, v);
-//                    }
-//                });
-//        });
-//        return 0;
+        if (itemSize == 0) {
+            itemSize = FakeDataGenerator.getRandomNumber();
+            logger.debug(String.format("Number of item size: %d", itemSize));
+        }
+        for (int i = 0; i < itemSize; i++) {
+            client.set(String.format("key_%d", i), 3600, FakeDataGenerator.getFullName());
+        }
+
+        Map<SocketAddress, Map<String, String>> stats = client.getStats();
+        Objects.requireNonNull(stats);
+        stats.forEach((socketAddress, stat) -> {
+            stat
+                .forEach((k, v) -> {
+                    if (k.contains("item")) {
+                        System.out.printf("%s -> %s%n", k, v);
+                    }
+                });
+        });
+        return 0;
     }
 
     @Command(name = "stats")

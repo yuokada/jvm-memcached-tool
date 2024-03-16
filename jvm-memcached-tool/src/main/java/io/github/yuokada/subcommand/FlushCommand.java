@@ -1,10 +1,8 @@
 package io.github.yuokada.subcommand;
 
-
 import static io.github.yuokada.MemcachedClientProvider.getMemcachedClient;
 
 import io.github.yuokada.EntryCommand;
-import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;

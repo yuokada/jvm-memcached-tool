@@ -5,13 +5,12 @@ import jakarta.enterprise.inject.Produces;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
-import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ClientMode;
+import net.spy.memcached.MemcachedClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.ParseResult;
-
 
 @ApplicationScoped
 public class MemcachedClientProvider {
