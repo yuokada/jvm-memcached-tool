@@ -2,14 +2,18 @@ package io.github.yuokada;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Named;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
+import javax.sql.DataSource;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.MemcachedClient;
+import org.postgresql.ds.PGSimpleDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import picocli.CommandLine;
 import picocli.CommandLine.ParseResult;
 
 @ApplicationScoped
@@ -62,4 +66,14 @@ public class MemcachedClientProvider {
 
         return getMemcachedClient(configEndpoint, clusterPort);
     }
+
+    @Produces
+    @ApplicationScoped
+    @Named("pg")
+    DataSource pgDataSource(CommandLine.ParseResult parseResult) {
+        PGSimpleDataSource ds = new PGSimpleDataSource();
+        ds.setURL(parseResult.matchedOption("c").getValue().toString());
+        return ds;
+    }
+
 }
