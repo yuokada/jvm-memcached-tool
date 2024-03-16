@@ -57,7 +57,7 @@ public class EntryCommand implements Callable<Integer> {
     @Override
     public Integer call() throws Exception {
         CommandLine.usage(this, System.out);
-        Quarkus.waitForExit();
+        // Quarkus.waitForExit();
         return ExitCode.OK;
     }
 }
