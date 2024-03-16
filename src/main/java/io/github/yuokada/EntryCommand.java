@@ -3,6 +3,7 @@ package io.github.yuokada;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.yuokada.subcommand.FlushCommand;
+import io.github.yuokada.util.FakeDataGenerator;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 import java.io.IOException;

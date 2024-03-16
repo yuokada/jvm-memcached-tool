@@ -1,4 +1,4 @@
-package io.github.yuokada;
+package io.github.yuokada.util;
 
 import net.datafaker.Faker;
 
@@ -14,7 +14,7 @@ public class FakeDataGenerator {
         throw new RuntimeException("Initialization is not allowed");
     }
 
-    static int getRandomNumber() {
+    public static int getRandomNumber() {
         return getRandomNumber(1024);
     }
 
@@ -22,7 +22,7 @@ public class FakeDataGenerator {
         return faker.number().numberBetween(0, maxInt);
     }
 
-    static String getFullName() {
+    public static String getFullName() {
         return faker.name().fullName();
     }
 }
