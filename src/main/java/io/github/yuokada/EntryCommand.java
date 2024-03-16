@@ -40,30 +40,24 @@ import picocli.CommandLine.Parameters;
 public class EntryCommand implements QuarkusApplication, Callable<Integer> {
 
     private static final Logger logger = LoggerFactory.getLogger(EntryCommand.class);
-
+    @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
+        showDefaultValue = Visibility.ALWAYS)
+    public static String configEndpoint;
+    @Option(names = {"-p", "--port"}, description = "Cluster port number.", defaultValue = "11211",
+        showDefaultValue = Visibility.ALWAYS)
+    public static int clusterPort;
     @Option(
         names = {"-v", "--verbose"},
         description = "Enable verbose mode.",
         defaultValue = "false"
     )
     public boolean verbose;
-
     @Option(names = {"-V", "--version"},
         versionHelp = true,
         description = "print version information and exit")
     boolean versionRequested;
-
     @Option(names = "--help", usageHelp = true, description = "display this help and exit")
     boolean help;
-
-    @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
-        showDefaultValue = Visibility.ALWAYS)
-    public static String configEndpoint;
-
-    @Option(names = {"-p", "--port"}, description = "Cluster port number.", defaultValue = "11211",
-        showDefaultValue = Visibility.ALWAYS)
-    public static int clusterPort;
-
 
     private static boolean isConfigEndpoint(String host) {
         return host.contains(".cfg.");
