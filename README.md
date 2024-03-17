@@ -6,6 +6,7 @@ This is a practice project to learn how to use Quarkus, the Supersonic Subatomic
   - [Command Mode Applications \- Quarkus](https://quarkus.io/guides/command-mode-reference)
 - [picocli \- a mighty tiny command line interface](https://picocli.info/)
 
+original: [scripts/memcached-tool](https://github.com/memcached/memcached/blob/1b3b8555734f9b7b8d979924c7f8d6cf82194ba8/scripts/memcached-tool)
 
 ## Prerequisite
 
