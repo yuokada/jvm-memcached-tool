@@ -17,7 +17,7 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.ParentCommand;
 
-@CommandLine.Command(name = "stats", description = "TBD")
+@CommandLine.Command(name = "stats", description = "Perform stats command")
 public class StatsCommand implements Callable<Integer> {
 
     @ParentCommand

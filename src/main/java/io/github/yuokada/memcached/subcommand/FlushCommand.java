@@ -11,7 +11,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.ParentCommand;
 
-@CommandLine.Command(name = "flush", description = "Flush items on memcached!")
+@CommandLine.Command(name = "flush", description = "Flush items on memcached")
 public class FlushCommand implements Callable<Integer> {
 
     @ParentCommand
