@@ -1,7 +1,5 @@
 package io.github.yuokada.memcached.subcommand;
 
-import static io.github.yuokada.memcached.MemcachedClientProvider.getMemcachedClient;
-
 import io.github.yuokada.memcached.EntryCommand;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,20 +87,21 @@ public class DumpCommand implements Callable<Integer> {
     private static final String message = "Dumping memcache contents";
 
     @Override
-    public Integer call() throws IOException {
+    public Integer call() {
         if (limit < 0) {
             System.err.println("Limit must be greater than or equal to 0");
             return ExitCode.USAGE;
         }
 
         if (limit > 0) {
-            message.concat(String.format(" (limiting to %d keys)", limit));
+            System.err.println(message.concat(String.format(" (limiting to %d keys)", limit)));
+        } else {
+            System.err.println(message);
         }
-        System.out.println(message);
 
         var serverAddress = entryCommand.configEndpoint;
         var serverPort = entryCommand.clusterPort;
-        var client = getMemcachedClient(serverAddress, serverPort);
+        var client = entryCommand.memcachedClient;
 
         try (Socket socket = new Socket(serverAddress, serverPort)) {
             var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -119,32 +118,31 @@ public class DumpCommand implements Callable<Integer> {
             List<DumpObject> list = new ArrayList<>();
 
             while ((response = reader.readLine()) != null) {
-                if (limit > 0 && counter >= limit) {
-                    // return ExitCode.OK;
-                    break;
-                } else if (response.equals("END")) {
-                    // return ExitCode.OK;
+                if (limit > 0 && counter >= limit || response.equals("END")) {
                     break;
                 }
 
                 Matcher matcher = pattern.matcher(response);
                 if (matcher.matches()) {
-                    String key = matcher.group(1);
+                    var key = matcher.group(1);
+                    var expiration = Integer.parseInt(matcher.group(2));
 
                     String vResponse = (String) client.get(key);
-                    list.add(new DumpObject(key, response, vResponse));
+                    // GetFuture<Object> objectGetFuture = client.asyncGet(key);
+                    list.add(new DumpObject(key, expiration, response, vResponse));
                     counter++;
                 }
             }
 
             list.forEach(e -> {
-                String fmt = String.format("%s\n%s", e.expression, e.value);
+                String fmt = String.format("add %s 0 %d %d\n%s", e.key, e.expiration,
+                    e.value.length(), e.value);
                 System.out.println(fmt);
             });
 
             return ExitCode.OK;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e.getMessage());
             return ExitCode.SOFTWARE;
         }
     }
@@ -152,11 +150,13 @@ public class DumpCommand implements Callable<Integer> {
     static class DumpObject {
 
         String key;
+        Integer expiration;
         String expression;
         String value;
 
-        public DumpObject(String key, String expression, String value) {
+        public DumpObject(String key, Integer expiration, String expression, String value) {
             this.key = key;
+            this.expiration = expiration;
             this.expression = expression;
             this.value = value;
         }
@@ -165,6 +165,7 @@ public class DumpCommand implements Callable<Integer> {
         public String toString() {
             return "DumpObject{" +
                 "key='" + key + '\'' +
+                ", expiration=" + expiration +
                 ", expression='" + expression + '\'' +
                 ", value='" + value + '\'' +
                 '}';
