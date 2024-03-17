@@ -45,20 +45,19 @@ public class MemcachedClientProvider {
     @ApplicationScoped
     MemcachedClient provideMemcachedClient(ParseResult parseResult) throws IOException {
         logger.debug(String.join(", ", parseResult.expandedArgs()));
-
         String configEndpoint;
         if (parseResult.hasMatchedOption("host")) {
             configEndpoint = parseResult.matchedOption("host").getValue().toString();
         } else {
-            // configEndpoint = parseResult.matchedOption("host").defaultValueString();
-            configEndpoint = parseResult.matchedOptionValue("host", "localhost");
+            configEndpoint = parseResult.commandSpec().findOption("host").defaultValue();
         }
         int clusterPort;
         if (parseResult.hasMatchedOption("port")) {
             clusterPort = Integer.parseInt(parseResult.matchedOption("port").getValue());
         } else {
-            // clusterPort = Integer.parseInt(parseResult.matchedOption("port").defaultValue());
-            clusterPort = Integer.parseInt(parseResult.matchedOptionValue("port", "11211"));
+            clusterPort = Integer.parseInt(
+                parseResult.commandSpec().findOption("port").defaultValue()
+            );
         }
         return getMemcachedClient(configEndpoint, clusterPort);
     }
