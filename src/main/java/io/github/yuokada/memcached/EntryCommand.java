@@ -1,5 +1,6 @@
 package io.github.yuokada.memcached;
 
+import io.github.yuokada.memcached.subcommand.DumpCommand;
 import io.github.yuokada.memcached.subcommand.FlushCommand;
 import io.github.yuokada.memcached.subcommand.GenerateCommand;
 import io.github.yuokada.memcached.subcommand.KeysCommand;
@@ -20,6 +21,7 @@ import picocli.CommandLine.Option;
 @CommandLine.Command(name = "memcached-tool",
     subcommands = {
         GenerateCommand.class,
+        DumpCommand.class,
         KeysCommand.class,
         StatsCommand.class,
         FlushCommand.class
