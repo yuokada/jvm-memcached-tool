@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.yuokada.memcached.EntryCommand;
 import io.github.yuokada.memcached.StatsSubCommands;
-import io.github.yuokada.memcached.MemcachedClientProvider;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.ArrayList;
@@ -34,8 +33,7 @@ public class StatsCommand implements Callable<Integer> {
 
     @Override
     public Integer call() throws IOException {
-        MemcachedClient client = MemcachedClientProvider.getMemcachedClient(
-            entryCommand.configEndpoint, entryCommand.clusterPort);
+        MemcachedClient client = entryCommand.memcachedClient;
         Map<SocketAddress, Map<String, String>> stats = fetchStats(client, operation);
         Objects.requireNonNull(stats);
 
