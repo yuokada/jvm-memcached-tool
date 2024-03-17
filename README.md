@@ -2,6 +2,11 @@
 
 This is a practice project to learn how to use Quarkus, the Supersonic Subatomic Java Framework, with Picocli.
 
+- [Command Mode with Picocli \- Quarkus](https://quarkus.io/guides/picocli)
+  - [Command Mode Applications \- Quarkus](https://quarkus.io/guides/command-mode-reference)
+- [picocli \- a mighty tiny command line interface](https://picocli.info/)
+
+
 ## Prerequisite
 
 - JDK 17
