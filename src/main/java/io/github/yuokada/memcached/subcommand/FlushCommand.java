@@ -1,9 +1,6 @@
 package io.github.yuokada.memcached.subcommand;
 
-import static io.github.yuokada.memcached.MemcachedClientProvider.getMemcachedClient;
-
 import io.github.yuokada.memcached.EntryCommand;
-import java.io.IOException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -22,13 +19,7 @@ public class FlushCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        MemcachedClient client = null;
-        try {
-            client = getMemcachedClient(entryCommand.configEndpoint, entryCommand.clusterPort);
-        } catch (IOException e) {
-            return ExitCode.SOFTWARE;
-            // throw new RuntimeException(e);
-        }
+        MemcachedClient client = entryCommand.memcachedClient;
 
         OperationFuture<Boolean> flushResult = client.flush();
         try {

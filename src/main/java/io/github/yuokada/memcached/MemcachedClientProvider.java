@@ -24,7 +24,7 @@ public class MemcachedClientProvider {
     public static MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
         throws IOException {
         String configEndpoint = "localhost";
-        logger.warn(String.format("server: %s:%d", configEndpoint, clusterPort));
+        logger.debug(String.format("server: %s:%d", configEndpoint, clusterPort));
         InetSocketAddress address = new InetSocketAddress(configEndpoint, clusterPort);
         MemcachedClient client;
         if (isConfigEndpoint(endpoint)) {
@@ -43,23 +43,22 @@ public class MemcachedClientProvider {
 
     @Produces
     @ApplicationScoped
-    MemcachedClient dataSource(ParseResult parseResult) throws IOException {
+    MemcachedClient provideMemcachedClient(ParseResult parseResult) throws IOException {
         logger.debug(String.join(", ", parseResult.expandedArgs()));
-
         String configEndpoint;
         if (parseResult.hasMatchedOption("host")) {
             configEndpoint = parseResult.matchedOption("host").getValue().toString();
         } else {
-            configEndpoint = parseResult.matchedOption("host").defaultValue();
+            configEndpoint = parseResult.commandSpec().findOption("host").defaultValue();
         }
         int clusterPort;
-        if (parseResult.hasMatchedOption("p")) {
-            clusterPort = Integer.parseInt(parseResult.matchedOption("p").getValue());
+        if (parseResult.hasMatchedOption("port")) {
+            clusterPort = Integer.parseInt(parseResult.matchedOption("port").getValue());
         } else {
-            clusterPort = Integer.parseInt(parseResult.matchedOption("p").defaultValue());
+            clusterPort = Integer.parseInt(
+                parseResult.commandSpec().findOption("port").defaultValue()
+            );
         }
-        logger.info(String.format("server: %s:%d", configEndpoint, clusterPort));
-
         return getMemcachedClient(configEndpoint, clusterPort);
     }
 }

@@ -4,10 +4,11 @@ import io.github.yuokada.memcached.subcommand.FlushCommand;
 import io.github.yuokada.memcached.subcommand.GenerateCommand;
 import io.github.yuokada.memcached.subcommand.KeysCommand;
 import io.github.yuokada.memcached.subcommand.StatsCommand;
-import io.quarkus.runtime.Quarkus;
-import io.quarkus.runtime.annotations.QuarkusMain;
+import io.quarkus.picocli.runtime.annotations.TopCommand;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.Callable;
+import net.spy.memcached.MemcachedClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -15,7 +16,7 @@ import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Help.Visibility;
 import picocli.CommandLine.Option;
 
-@QuarkusMain
+@TopCommand
 @CommandLine.Command(name = "memcached-tool",
     subcommands = {
         GenerateCommand.class,
@@ -32,7 +33,7 @@ public class EntryCommand implements Callable<Integer> {
     @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
         showDefaultValue = Visibility.ALWAYS)
     public String configEndpoint;
-    @Option(names = {"-p", "--port"}, description = "Cluster port number.", defaultValue = "11211",
+    @Option(names = {"--port", "-p"}, description = "Cluster port number.", defaultValue = "11211",
         showDefaultValue = Visibility.ALWAYS)
     public int clusterPort;
     @Option(
@@ -53,6 +54,9 @@ public class EntryCommand implements Callable<Integer> {
         int exitCode = new CommandLine(new EntryCommand()).execute(args);
         System.exit(exitCode);
     }
+
+    @Inject
+    public MemcachedClient memcachedClient;
 
     @Override
     public Integer call() throws Exception {
