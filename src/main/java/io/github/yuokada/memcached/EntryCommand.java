@@ -4,6 +4,7 @@ import io.github.yuokada.memcached.subcommand.DumpCommand;
 import io.github.yuokada.memcached.subcommand.FlushCommand;
 import io.github.yuokada.memcached.subcommand.GenerateCommand;
 import io.github.yuokada.memcached.subcommand.KeysCommand;
+import io.github.yuokada.memcached.subcommand.SettingsCommand;
 import io.github.yuokada.memcached.subcommand.StatsCommand;
 import io.quarkus.picocli.runtime.annotations.TopCommand;
 import jakarta.inject.Inject;
@@ -23,6 +24,7 @@ import picocli.CommandLine.Option;
         GenerateCommand.class,
         DumpCommand.class,
         KeysCommand.class,
+        SettingsCommand.class,
         StatsCommand.class,
         FlushCommand.class
     },
