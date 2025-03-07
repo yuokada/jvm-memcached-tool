@@ -5,6 +5,9 @@ services:
   memcached:
     image: memcached:1.6
     command: memcached -m 256
+    # command:
+    #   - -m 256
+    #   - -o track_sizes
     ports:
       - "11211:11211"
     networks:
