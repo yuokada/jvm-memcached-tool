@@ -1,10 +1,12 @@
 package io.github.yuokada.memcached;
 
+import io.github.yuokada.memcached.subcommand.DisplayCommand;
 import io.github.yuokada.memcached.subcommand.DumpCommand;
 import io.github.yuokada.memcached.subcommand.FlushCommand;
 import io.github.yuokada.memcached.subcommand.GenerateCommand;
 import io.github.yuokada.memcached.subcommand.KeysCommand;
 import io.github.yuokada.memcached.subcommand.SettingsCommand;
+import io.github.yuokada.memcached.subcommand.SizesCommand;
 import io.github.yuokada.memcached.subcommand.StatsCommand;
 import io.quarkus.picocli.runtime.annotations.TopCommand;
 import jakarta.inject.Inject;
@@ -22,9 +24,11 @@ import picocli.CommandLine.Option;
 @CommandLine.Command(name = "memcached-tool",
     subcommands = {
         GenerateCommand.class,
+        DisplayCommand.class,
         DumpCommand.class,
         KeysCommand.class,
         SettingsCommand.class,
+        SizesCommand.class,
         StatsCommand.class,
         FlushCommand.class
     },
