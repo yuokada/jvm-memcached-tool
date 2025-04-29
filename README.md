@@ -83,8 +83,8 @@ $ mvn -Prelease release:perform
 #### (If necessary) When the release commands are failed
 
 ```shell
+mvn release:clean
 git reset --hard
 git clean -fd
 git tag -d <TAG: 0.2.1>
-rm release.properties pom.xml.tag
 ```
