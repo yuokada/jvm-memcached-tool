@@ -171,7 +171,6 @@
         <configuration>
           <projectVersionPolicyId>SemVerVersionPolicy</projectVersionPolicyId>
           <tagNameFormat>@{project.version}</tagNameFormat>
-          <pushChanges>false</pushChanges>
         </configuration>
       </plugin>
 
