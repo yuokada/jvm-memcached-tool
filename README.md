@@ -1,4 +1,5 @@
 # jvm-memcached-tool
+![Maven Central Version](https://img.shields.io/maven-central/v/io.github.yuokada/jvm-memcached-tool?link=https%3A%2F%2Fcentral.sonatype.com%2Fartifact%2Fio.github.yuokada%2Fjvm-memcached-tool)
 
 This is a practice project to learn how to use Quarkus, the Supersonic Subatomic Java Framework, with Picocli.
 
