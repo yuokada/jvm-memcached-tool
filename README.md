@@ -53,4 +53,38 @@ Commands:
 
 ## Development
 
-TBD
+### 📦 Releasing jvm-memcached-tool to Maven Central
+
+This document describes how to release this library to [Maven Central](https://central.sonatype.com/) using `maven-release-plugin` and `central-publishing-maven-plugin`.
+
+---
+
+#### ✅ Prerequisites
+
+- You must have a Sonatype Central Portal account.
+- Your project must be registered and approved via OSSRH (JIRA).
+- Your `~/.m2/settings.xml` must contain the following credentials:
+
+```xml
+<servers>
+  <server>
+    <id>central</id>
+    <username>your-token-username</username>
+    <password>your-token-password</password>
+  </server>
+</servers>
+```
+
+```shell
+$ mvn -Prelease release:prepare
+$ mvn -Prelease release:perform
+```
+
+#### (If necessary) When the release commands are failed
+
+```shell
+git reset --hard
+git clean -fd
+git tag -d <TAG: 0.2.1>
+rm release.properties pom.xml.tag
+```
