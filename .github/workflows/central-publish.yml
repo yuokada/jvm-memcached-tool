@@ -4,6 +4,8 @@ name: Publish to Maven Central
 # see: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows
 on:
   push:
+    branches:
+      - master
     tags:
       - '[v0-9]+.*'
 jobs:
