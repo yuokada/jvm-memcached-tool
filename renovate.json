@@ -1,5 +1,11 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["^io.quarkus:*"],
+      "allowedVersions": "/^3.(15|20)(\\..*)?$/"
+    }
+  ],
   "extends": [
     "config:recommended"
   ]
