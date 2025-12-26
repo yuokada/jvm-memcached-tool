@@ -87,8 +87,7 @@ class CleanArchitectureArchTest {
                     BASE + ".adapter.in.cli..",
                     // allowed: application (ports/usecases)
                     BASE + ".application..",
-                    // also allow base package (e.g., shared exceptions/constants if any)
-                    // BASE,
+                    // also allow base package (e.g., shared exceptions/constants if any) if needed
                     // JDK + common libs (picocli etc.)
                     "java..",
                     "javax..",
