@@ -25,7 +25,7 @@ class CleanArchitectureArchTest {
 
     // 1) application must not depend on adapter/bootstrap
     @Test
-    void application_must_not_depend_on_adapter_or_bootstrap() {
+    void applicationMustNotDependOnAdapterOrBootstrap() {
         ArchRule rule =
             noClasses()
                 .that()
@@ -39,7 +39,7 @@ class CleanArchitectureArchTest {
     // 2) domain must not depend on application/adapter/bootstrap
     @Disabled("Disabled until domain layer is fully implemented.")
     @Test
-    void domain_must_not_depend_on_outer_layers() {
+    void domainMustNotDependOnOuterLayers() {
         ArchRule rule =
             noClasses()
                 .that()
@@ -56,7 +56,7 @@ class CleanArchitectureArchTest {
     // 3) adapter/in/cli should only depend on application (usecase/port) and JDK/3rd party
     //    (i.e., must NOT depend on adapter/out or bootstrap or domain directly)
     @Test
-    void cli_adapter_must_not_depend_on_out_or_bootstrap_or_domain() {
+    void cliAdapterMustNotDependOnOutOrBootstrapOrDomain() {
         ArchRule rule =
             noClasses()
                 .that()
@@ -72,7 +72,7 @@ class CleanArchitectureArchTest {
 
     // 3b) CLI adapter is allowed to depend on application layer
     @Test
-    void cli_adapter_may_depend_on_application() {
+    void cliAdapterMayDependOnApplication() {
         ArchRule rule =
             classes()
                 .that()
@@ -101,7 +101,7 @@ class CleanArchitectureArchTest {
 
     // 4) adapter/out must only implement application ports, and must not depend on adapter/in or bootstrap.
     @Test
-    void out_adapters_must_not_depend_on_in_or_bootstrap() {
+    void outAdaptersMustNotDependOnInOrBootstrap() {
         ArchRule rule =
             noClasses()
                 .that()
@@ -114,7 +114,7 @@ class CleanArchitectureArchTest {
 
     // 4b) out adapters should depend on application ports (at least one) – "port implementation" check.
     @Test
-    void out_adapters_should_implement_a_port_interface() {
+    void outAdaptersShouldImplementAPortInterface() {
         var isPortInterface = new DescribedPredicate<JavaClass>("an interface in application.port") {
             @Override
             public boolean test(JavaClass c) {
@@ -139,7 +139,7 @@ class CleanArchitectureArchTest {
 
     // Optional: classic layer rule (strict)
     @Test
-    void layered_architecture_guardrail() {
+    void layeredArchitectureGuardrail() {
         // Very strict guardrail:
         // - domain: no outgoing deps to app/adapter/bootstrap (already checked)
         // - app: no outgoing deps to adapter/bootstrap (already checked)
