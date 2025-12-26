@@ -8,8 +8,7 @@ import io.github.yuokada.memcached.adapter.in.cli.subcommand.StatsCommand;
 import io.quarkus.picocli.runtime.annotations.TopCommand;
 import java.io.IOException;
 import java.util.concurrent.Callable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 import picocli.CommandLine;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Help.Visibility;
@@ -29,7 +28,7 @@ import picocli.CommandLine.Option;
     description = "Simple tool to handle memcached")
 public class EntryCommand implements Callable<Integer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(EntryCommand.class);
+    private static final Logger logger = Logger.getLogger(EntryCommand.class);
     @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
         showDefaultValue = Visibility.ALWAYS)
     public String configEndpoint;

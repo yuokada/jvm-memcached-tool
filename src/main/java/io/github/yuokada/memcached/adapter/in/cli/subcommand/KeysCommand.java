@@ -4,8 +4,7 @@ import io.github.yuokada.memcached.application.usecase.KeysUseCase;
 import jakarta.inject.Inject;
 import java.util.List;
 import java.util.concurrent.Callable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
@@ -34,7 +33,7 @@ public class KeysCommand implements Callable<Integer> {
     }
     */
 
-    private static final Logger logger = LoggerFactory.getLogger(KeysCommand.class);
+    private static final Logger logger = Logger.getLogger(KeysCommand.class);
     @Inject
     KeysUseCase keysUseCase;
 

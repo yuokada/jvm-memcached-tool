@@ -8,14 +8,13 @@ import java.util.List;
 import net.spy.memcached.BinaryConnectionFactory;
 import net.spy.memcached.ClientMode;
 import net.spy.memcached.MemcachedClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 import picocli.CommandLine.ParseResult;
 
 @ApplicationScoped
 public class MemcachedClientProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(MemcachedClientProvider.class);
+    private static final Logger logger = Logger.getLogger(MemcachedClientProvider.class);
 
     private static boolean isConfigEndpoint(String host) {
         return host.contains(".cfg.");

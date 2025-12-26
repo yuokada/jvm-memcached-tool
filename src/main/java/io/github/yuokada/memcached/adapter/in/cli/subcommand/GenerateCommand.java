@@ -9,8 +9,7 @@ import java.net.SocketAddress;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParentCommand;
@@ -22,7 +21,7 @@ import picocli.CommandLine.ParentCommand;
 )
 public class GenerateCommand implements Callable<Integer> {
 
-    private static final Logger logger = LoggerFactory.getLogger(GenerateCommand.class);
+    private static final Logger logger = Logger.getLogger(GenerateCommand.class);
 
     @ParentCommand
     private EntryCommand entryCommand;
