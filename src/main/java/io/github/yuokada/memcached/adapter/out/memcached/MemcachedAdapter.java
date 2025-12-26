@@ -5,6 +5,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.net.SocketAddress;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.spy.memcached.MemcachedClient;
 import net.spy.memcached.internal.OperationFuture;
-import java.nio.charset.StandardCharsets;
 
 @ApplicationScoped
 public class MemcachedAdapter extends AbstractMemcachedSocketAdapter implements MemcachedPort {
@@ -95,6 +95,7 @@ public class MemcachedAdapter extends AbstractMemcachedSocketAdapter implements 
             return results;
         });
     }
+
     private boolean shouldStop(int limit, int counter, String response) {
         return (limit > 0 && counter >= limit) || "END".equals(response);
     }

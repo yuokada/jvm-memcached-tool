@@ -6,7 +6,6 @@ import jakarta.inject.Inject;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +43,10 @@ public class SizesUseCase {
     }
 
     public record SizesResult(String server, List<SizeCount> entries) {
+
     }
 
     public record SizeCount(long sizeBytes, String count) {
+
     }
 }

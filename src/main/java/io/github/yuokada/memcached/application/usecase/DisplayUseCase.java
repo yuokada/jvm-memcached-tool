@@ -130,6 +130,7 @@ public class DisplayUseCase {
     }
 
     public record DisplayResult(String server, List<SlabSummary> slabs) {
+
     }
 
     public record SlabSummary(
@@ -143,6 +144,7 @@ public class DisplayUseCase {
         long evictedTime,
         long outOfMemory
     ) {
+
     }
 
     private static class MutableSlab {

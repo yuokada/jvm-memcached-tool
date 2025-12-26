@@ -5,14 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.github.yuokada.memcached.application.port.MemcachedPort;
 import io.github.yuokada.memcached.bootstrap.MemcachedClientProvider;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
