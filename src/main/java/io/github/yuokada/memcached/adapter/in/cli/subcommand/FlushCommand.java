@@ -11,10 +11,10 @@ import picocli.CommandLine.ParentCommand;
 @CommandLine.Command(name = "flush", description = "Flush items on memcached")
 public class FlushCommand implements Callable<Integer> {
 
-    @ParentCommand
-    private EntryCommand entryCommand;
     @Inject
     FlushUseCase flushUseCase;
+    @ParentCommand
+    private EntryCommand entryCommand;
 
     @Override
     public Integer call() {

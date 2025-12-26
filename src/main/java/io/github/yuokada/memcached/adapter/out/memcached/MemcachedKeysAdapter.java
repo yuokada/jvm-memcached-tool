@@ -3,8 +3,6 @@ package io.github.yuokada.memcached.adapter.out.memcached;
 import io.github.yuokada.memcached.application.port.KeysPort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.io.BufferedReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;

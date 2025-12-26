@@ -30,5 +30,6 @@ public class DumpUseCase {
     }
 
     public record DumpResult(String key, int expiration, String value) {
+
     }
 }

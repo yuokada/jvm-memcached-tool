@@ -47,17 +47,17 @@ public abstract class AbstractMemcachedSocketAdapter {
     /**
      * Executes a Memcached command via raw socket and processes the response.
      *
-     * @param command the command to send to Memcached
+     * @param command           the command to send to Memcached
      * @param responseProcessor the processor to handle the response lines
-     * @param <T> the type of result returned by the processor
+     * @param <T>               the type of result returned by the processor
      * @return the result from the processor
      * @throws IllegalStateException if the socket communication fails
      */
     protected <T> T executeCommand(String command, ResponseProcessor<T> responseProcessor) {
         InetSocketAddress endpoint = resolveEndpoint();
         try (Socket socket = new Socket(endpoint.getHostString(), endpoint.getPort());
-             var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-             var writer = new OutputStreamWriter(socket.getOutputStream())) {
+            var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            var writer = new OutputStreamWriter(socket.getOutputStream())) {
 
             writer.write(command);
             writer.flush();
@@ -75,6 +75,7 @@ public abstract class AbstractMemcachedSocketAdapter {
      */
     @FunctionalInterface
     protected interface ResponseProcessor<T> {
+
         T process(BufferedReader reader) throws IOException;
     }
 }

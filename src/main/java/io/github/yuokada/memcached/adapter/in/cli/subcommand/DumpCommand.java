@@ -1,9 +1,9 @@
 package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
 import io.github.yuokada.memcached.application.usecase.DumpUseCase;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.concurrent.Callable;
-import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
@@ -66,16 +66,14 @@ public class DumpCommand implements Callable<Integer> {
     }
     */
     private static final Logger logger = Logger.getLogger(DumpCommand.class);
+    private static final String message = "Dumping memcache contents";
     @Inject
     DumpUseCase dumpUseCase;
-
     @Option(
         names = {"--limit"}, description = "Number of keys to dump. 0 is no limit.",
         defaultValue = "0"
     )
     int limit;
-
-    private static final String message = "Dumping memcache contents";
 
     @Override
     public Integer call() {

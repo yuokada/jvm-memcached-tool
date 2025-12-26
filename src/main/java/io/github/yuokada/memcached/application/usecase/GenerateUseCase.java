@@ -34,5 +34,6 @@ public class GenerateUseCase {
     }
 
     public record Result(int generatedCount, Map<SocketAddress, Map<String, String>> stats) {
+
     }
 }

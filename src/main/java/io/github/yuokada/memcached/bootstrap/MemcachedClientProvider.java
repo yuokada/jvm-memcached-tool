@@ -52,7 +52,7 @@ public class MemcachedClientProvider {
         }
         int clusterPort;
         if (parseResult.hasMatchedOption("port")) {
-            clusterPort = (Integer) parseResult.matchedOption("port").getValue();
+            clusterPort = parseResult.matchedOption("port").getValue();
         } else {
             clusterPort = Integer.parseInt(
                 parseResult.commandSpec().findOption("port").defaultValue()

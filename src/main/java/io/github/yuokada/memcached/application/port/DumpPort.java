@@ -7,5 +7,6 @@ public interface DumpPort {
     List<DumpMetadata> fetchMetadata(int limit);
 
     record DumpMetadata(String key, int expiration) {
+
     }
 }

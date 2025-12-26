@@ -34,16 +34,14 @@ public class KeysCommand implements Callable<Integer> {
     */
 
     private static final Logger logger = Logger.getLogger(KeysCommand.class);
+    private static final String message = "Dumping memcache keys";
     @Inject
     KeysUseCase keysUseCase;
-
     @Option(
         names = {"--limit"}, description = "Number of keys to dump. 0 is no limit.",
         defaultValue = "0"
     )
     int limit;
-
-    private static final String message = "Dumping memcache keys";
 
     @Override
     public Integer call() {

@@ -22,25 +22,21 @@ import picocli.CommandLine.ParentCommand;
 public class GenerateCommand implements Callable<Integer> {
 
     private static final Logger logger = Logger.getLogger(GenerateCommand.class);
-
-    @ParentCommand
-    private EntryCommand entryCommand;
     @Inject
     GenerateUseCase generateUseCase;
-
     @Option(
         names = {"--size"}, description = "item size to write. 0 is random size",
         defaultValue = "0"
     )
     int itemSize;
-
     @Option(names = {"--help", "-h"}, usageHelp = true)
     boolean help;
-
     @Option(names = {"--json"},
         description = "Flag to output with JSON format"
     )
     boolean jsonOutputFlag;
+    @ParentCommand
+    private EntryCommand entryCommand;
 
     @Override
     public Integer call() {
