@@ -1,15 +1,13 @@
-package io.github.yuokada.memcached.presentation.cli;
+package io.github.yuokada.memcached.adapter.in.cli;
 
-import io.github.yuokada.memcached.presentation.cli.subcommand.DumpCommand;
-import io.github.yuokada.memcached.presentation.cli.subcommand.FlushCommand;
-import io.github.yuokada.memcached.presentation.cli.subcommand.GenerateCommand;
-import io.github.yuokada.memcached.presentation.cli.subcommand.KeysCommand;
-import io.github.yuokada.memcached.presentation.cli.subcommand.StatsCommand;
+import io.github.yuokada.memcached.adapter.in.cli.subcommand.DumpCommand;
+import io.github.yuokada.memcached.adapter.in.cli.subcommand.FlushCommand;
+import io.github.yuokada.memcached.adapter.in.cli.subcommand.GenerateCommand;
+import io.github.yuokada.memcached.adapter.in.cli.subcommand.KeysCommand;
+import io.github.yuokada.memcached.adapter.in.cli.subcommand.StatsCommand;
 import io.quarkus.picocli.runtime.annotations.TopCommand;
-import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.Callable;
-import net.spy.memcached.MemcachedClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -56,9 +54,6 @@ public class EntryCommand implements Callable<Integer> {
         int exitCode = new CommandLine(new EntryCommand()).execute(args);
         System.exit(exitCode);
     }
-
-    @Inject
-    public MemcachedClient memcachedClient;
 
     @Override
     public Integer call() throws Exception {

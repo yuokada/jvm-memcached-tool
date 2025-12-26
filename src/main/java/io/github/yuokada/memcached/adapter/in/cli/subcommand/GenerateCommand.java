@@ -1,15 +1,14 @@
-package io.github.yuokada.memcached.presentation.cli.subcommand;
+package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.yuokada.memcached.infrastructure.faker.FakeDataGenerator;
-import io.github.yuokada.memcached.presentation.cli.EntryCommand;
-import java.io.IOException;
+import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
+import io.github.yuokada.memcached.application.usecase.GenerateUseCase;
+import jakarta.inject.Inject;
 import java.net.SocketAddress;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import net.spy.memcached.MemcachedClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
@@ -27,6 +26,8 @@ public class GenerateCommand implements Callable<Integer> {
 
     @ParentCommand
     private EntryCommand entryCommand;
+    @Inject
+    GenerateUseCase generateUseCase;
 
     @Option(
         names = {"--size"}, description = "item size to write. 0 is random size",
@@ -43,19 +44,12 @@ public class GenerateCommand implements Callable<Integer> {
     boolean jsonOutputFlag;
 
     @Override
-    public Integer call() throws IOException {
-        MemcachedClient client = entryCommand.memcachedClient;
+    public Integer call() {
+        GenerateUseCase.Result result = generateUseCase.execute(itemSize);
+        int generatedCount = result.generatedCount();
+        logger.debug(String.format("Number of item size: %d", generatedCount));
 
-        if (itemSize == 0) {
-            itemSize = FakeDataGenerator.getRandomNumber();
-            logger.debug(String.format("Number of item size: %d", itemSize));
-        }
-
-        for (int i = 0; i < itemSize; i++) {
-            client.set(String.format("key_%d", i), 3600, FakeDataGenerator.getFullName());
-        }
-
-        Map<SocketAddress, Map<String, String>> stats = client.getStats();
+        Map<SocketAddress, Map<String, String>> stats = result.stats();
         Objects.requireNonNull(stats);
         if (jsonOutputFlag) {
             stats.forEach((socketAddress, stat) -> {
