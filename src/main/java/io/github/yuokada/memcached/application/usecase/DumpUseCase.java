@@ -7,15 +7,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class DumpUseCase {
 
+    private static final Logger log = LoggerFactory.getLogger(DumpUseCase.class);
     private static final Pattern PATTERN = Pattern.compile("^key=(\\S+) exp=(-?\\d+) .*");
     private final MemcachedPort memcachedPort;
 
@@ -25,7 +30,30 @@ public class DumpUseCase {
     }
 
     public List<DumpResult> execute(String host, int port, int limit) {
-        try (Socket socket = new Socket(host, port);
+        Collection<InetSocketAddress> endpoints = memcachedPort.getAvailableServers();
+        List<DumpResult> allResults = new ArrayList<>();
+        int totalCounter = 0;
+
+        for (InetSocketAddress endpoint : endpoints) {
+            if (limit > 0 && totalCounter >= limit) {
+                break;
+            }
+
+            try {
+                int serverLimit = limit > 0 ? limit - totalCounter : 0;
+                List<DumpResult> serverResults = fetchMetadataFromServer(endpoint, serverLimit);
+                allResults.addAll(serverResults);
+                totalCounter += serverResults.size();
+            } catch (IOException e) {
+                log.warn("Failed to dump metadata from {}: {}", endpoint, e.getMessage());
+            }
+        }
+
+        return allResults;
+    }
+
+    private List<DumpResult> fetchMetadataFromServer(InetSocketAddress endpoint, int limit) throws IOException {
+        try (Socket socket = new Socket(endpoint.getHostString(), endpoint.getPort());
             var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             var writer = new OutputStreamWriter(socket.getOutputStream())) {
 
@@ -53,8 +81,6 @@ public class DumpUseCase {
                 counter++;
             }
             return results;
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to communicate with memcached", e);
         }
     }
 
