@@ -1,6 +1,5 @@
 package io.github.yuokada.memcached.application.usecase;
 
-import io.github.yuokada.memcached.application.port.DumpPort;
 import io.github.yuokada.memcached.application.port.MemcachedPort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -10,16 +9,14 @@ import java.util.List;
 public class DumpUseCase {
 
     private final MemcachedPort memcachedPort;
-    private final DumpPort dumpPort;
 
     @Inject
-    public DumpUseCase(MemcachedPort memcachedPort, DumpPort dumpPort) {
+    public DumpUseCase(MemcachedPort memcachedPort) {
         this.memcachedPort = memcachedPort;
-        this.dumpPort = dumpPort;
     }
 
     public List<DumpResult> execute(int limit) {
-        List<DumpPort.DumpMetadata> metadata = dumpPort.fetchMetadata(limit);
+        List<MemcachedPort.DumpMetadata> metadata = memcachedPort.fetchMetadata(limit);
         return metadata.stream()
             .map(entry -> {
                 Object value = memcachedPort.get(entry.key());

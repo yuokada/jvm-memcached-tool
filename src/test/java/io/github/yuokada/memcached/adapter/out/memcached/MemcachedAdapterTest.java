@@ -5,9 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.yuokada.memcached.application.port.MemcachedPort;
 import io.github.yuokada.memcached.bootstrap.MemcachedClientProvider;
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -24,7 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers(disabledWithoutDocker = true)
 class MemcachedAdapterTest {
 
-    private static final String MEMCACHED_IMAGE = "memcached:1.6.24-alpine";
+    private static final String MEMCACHED_IMAGE = "memcached:1.6.32-alpine";
     private static final Integer MEMCACHED_PORT = 11211;
 
     @Container
@@ -93,5 +97,31 @@ class MemcachedAdapterTest {
 
         assertTrue(memcachedAdapter.flush(5));
         assertNull(memcachedAdapter.get(key));
+    }
+
+    @Test
+    void fetchMetadataReturnsKeysWithExpiration() {
+        String key = "memcached:metadata:" + UUID.randomUUID();
+        memcachedAdapter.set(key, 120, "meta-value");
+
+        List<MemcachedPort.DumpMetadata> metadata = memcachedAdapter.fetchMetadata(50);
+        assertTrue(
+            metadata.stream().anyMatch(entry -> entry.key().equals(key)),
+            "metadata should include inserted key"
+        );
+    }
+
+    @Test
+    void fetchKeysReturnsRawKeyLines() {
+        String key = "memcached:keys:" + UUID.randomUUID();
+        memcachedAdapter.set(key, 120, "key-value");
+
+        List<String> keys = memcachedAdapter.fetchKeys(50);
+        String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8)
+            .replace("+", "%20");
+        assertTrue(
+            keys.stream().anyMatch(line -> line.contains("key=" + encodedKey)),
+            "keys output should contain inserted key"
+        );
     }
 }
