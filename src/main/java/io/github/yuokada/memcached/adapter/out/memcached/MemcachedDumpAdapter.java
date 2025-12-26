@@ -16,10 +16,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.spy.memcached.MemcachedClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 public class MemcachedDumpAdapter implements DumpPort {
 
+    private static final Logger log = LoggerFactory.getLogger(MemcachedDumpAdapter.class);
     private static final Pattern PATTERN = Pattern.compile("^key=(\\S+) exp=(-?\\d+) .*");
     private final MemcachedClient memcachedClient;
 
@@ -44,8 +47,7 @@ public class MemcachedDumpAdapter implements DumpPort {
                 allResults.addAll(serverResults);
                 totalCounter += serverResults.size();
             } catch (IOException e) {
-                // Log and continue to next server instead of failing completely
-                System.err.println("Warning: Failed to dump metadata from " + endpoint + ": " + e.getMessage());
+                log.warn("Failed to dump metadata from {}: {}", endpoint, e.getMessage());
             }
         }
 
