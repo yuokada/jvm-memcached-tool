@@ -90,11 +90,11 @@ public class MemcachedDumpAdapter implements DumpPort {
             .filter(InetSocketAddress.class::isInstance)
             .map(InetSocketAddress.class::cast)
             .toList();
-        
+
         if (endpoints.isEmpty()) {
             throw new IllegalStateException("No available memcached servers");
         }
-        
+
         return endpoints;
     }
 }
