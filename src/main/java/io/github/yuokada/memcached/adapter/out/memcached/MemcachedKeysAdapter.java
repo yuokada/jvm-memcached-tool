@@ -27,12 +27,10 @@ public class MemcachedKeysAdapter extends AbstractMemcachedSocketAdapter impleme
             int counter = 0;
             String response;
             while ((response = reader.readLine()) != null) {
-                if (limit > 0 && counter >= limit) {
+                if ((limit > 0 && counter >= limit) || "END".equals(response)) {
                     break;
                 }
-                if ("END".equals(response)) {
-                    break;
-                }
+
                 if (PATTERN.matcher(response).matches()) {
                     results.add(response);
                     counter++;
