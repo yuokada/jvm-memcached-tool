@@ -30,12 +30,7 @@ public class StatsCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        Map<SocketAddress, Map<String, String>> stats;
-        try {
-            stats = statsUseCase.execute(operation);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        }
+        Map<SocketAddress, Map<String, String>> stats = statsUseCase.execute(operation);
         Objects.requireNonNull(stats);
 
         if (jsonOutputFlag) {
