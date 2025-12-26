@@ -90,3 +90,10 @@ git reset --hard
 git clean -fd
 git tag -d <TAG: 0.2.1>
 ```
+
+
+## References
+
+- [memcached - Official Image | Docker Hub](https://hub.docker.com/_/memcached)
+- [Testcontainers for Java](https://java.testcontainers.org/)
+  - [Jupiter / JUnit 5 - Testcontainers for Java](https://java.testcontainers.org/test_framework_integration/junit_5/)
