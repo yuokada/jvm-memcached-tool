@@ -1,5 +1,6 @@
 package io.github.yuokada.memcached.adapter.in.cli;
 
+import io.github.yuokada.memcached.adapter.in.cli.subcommand.DisplayCommand;
 import io.github.yuokada.memcached.adapter.in.cli.subcommand.DumpCommand;
 import io.github.yuokada.memcached.adapter.in.cli.subcommand.FlushCommand;
 import io.github.yuokada.memcached.adapter.in.cli.subcommand.GenerateCommand;
@@ -17,6 +18,7 @@ import picocli.CommandLine.Option;
 @TopCommand
 @CommandLine.Command(name = "memcached-tool",
     subcommands = {
+        DisplayCommand.class,
         GenerateCommand.class,
         DumpCommand.class,
         KeysCommand.class,

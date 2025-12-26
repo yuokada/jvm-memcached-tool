@@ -44,6 +44,7 @@ Simple tool to handle memcached
   -v, --verbose              Enable verbose mode.
   -V, --version              print version information and exit
 Commands:
+  display        Display slab statistics
   generate, gen  Generate items on memcached!
   dump
   keys

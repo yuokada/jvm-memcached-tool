@@ -1,7 +1,7 @@
 # Repository Guidelines
 
 ## Project Overview
-This command-line tool interacts with Memcached using Quarkus and Picocli. The main entry point is `io.github.yuokada.memcached.adapter.in.cli.EntryCommand`, which wires top-level options and subcommands for `generate`, `dump`, `keys`, `stats`, and `flush`. The standard Maven layout applies: sources under `src/main/java`, resources in `src/main/resources`, and tests in `src/test/java`. Releases are handled through the `maven-release-plugin`.
+This command-line tool interacts with Memcached using Quarkus and Picocli. The main entry point is `io.github.yuokada.memcached.adapter.in.cli.EntryCommand`, which wires top-level options and subcommands for `display`, `generate`, `dump`, `keys`, `stats`, and `flush`. The standard Maven layout applies: sources under `src/main/java`, resources in `src/main/resources`, and tests in `src/test/java`. Releases are handled through the `maven-release-plugin`.
 
 ## Project Structure & Module Organization
 Application code lives under `src/main/java/io/github/yuokada/memcached` and is split into `domain` (aggregates/enums), `application/port|usecase` (ports and use cases), `adapter/in/cli` (Picocli commands), `adapter/out/{memcached,faker}` (external service adapters), and `bootstrap` (DI wiring). Store configuration and assets in `src/main/resources`, keep auxiliary assets such as Compose files under `src/test/resources/compose.yaml` or `misc/`, and ensure build artifacts stay inside `target/`.
@@ -25,6 +25,7 @@ Follow the existing Git history: short, imperative commit summaries (for example
 
 The following commands are available:
 
+*   `display`: Show slab statistics (chunk size, age, usage, eviction info).
 *   `generate`: Generate items on memcached.
 *   `dump`: Dumps keys and values from memcached.
 *   `keys`: Lists keys from memcached.
