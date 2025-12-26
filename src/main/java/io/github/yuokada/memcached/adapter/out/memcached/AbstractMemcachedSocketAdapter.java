@@ -18,6 +18,13 @@ public abstract class AbstractMemcachedSocketAdapter {
 
     protected final MemcachedClient memcachedClient;
 
+    /**
+     * No-args constructor required for CDI proxying.
+     */
+    protected AbstractMemcachedSocketAdapter() {
+        this.memcachedClient = null;
+    }
+
     protected AbstractMemcachedSocketAdapter(MemcachedClient memcachedClient) {
         this.memcachedClient = memcachedClient;
     }
