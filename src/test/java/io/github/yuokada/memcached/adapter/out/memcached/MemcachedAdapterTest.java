@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import net.spy.memcached.MemcachedClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -22,7 +24,7 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers(disabledWithoutDocker = true)
 class MemcachedAdapterTest {
 
-    private static final String MEMCACHED_IMAGE = "memcached:1.6.32-alpine";
+    private static final String MEMCACHED_IMAGE = "memcached:1.6.24-alpine";
     private static final Integer MEMCACHED_PORT = 11211;
 
     @Container
@@ -84,7 +86,7 @@ class MemcachedAdapterTest {
     }
 
     @Test
-    void flushClearsStoredData() throws Exception {
+    void flushClearsStoredData() throws ExecutionException, InterruptedException, TimeoutException {
         String key = "memcached:flush:" + UUID.randomUUID();
         memcachedAdapter.set(key, 300, "value");
         assertEquals("value", memcachedAdapter.get(key));
