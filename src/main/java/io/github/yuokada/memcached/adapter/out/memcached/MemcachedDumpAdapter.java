@@ -30,7 +30,29 @@ public class MemcachedDumpAdapter implements DumpPort {
 
     @Override
     public List<DumpMetadata> fetchMetadata(int limit) {
-        InetSocketAddress endpoint = resolveEndpoint();
+        Collection<InetSocketAddress> endpoints = resolveEndpoints();
+        List<DumpMetadata> allResults = new ArrayList<>();
+        int totalCounter = 0;
+
+        for (InetSocketAddress endpoint : endpoints) {
+            if (limit > 0 && totalCounter >= limit) {
+                break;
+            }
+
+            try {
+                List<DumpMetadata> serverResults = fetchMetadataFromServer(endpoint, limit > 0 ? limit - totalCounter : 0);
+                allResults.addAll(serverResults);
+                totalCounter += serverResults.size();
+            } catch (IOException e) {
+                // Log and continue to next server instead of failing completely
+                System.err.println("Warning: Failed to dump metadata from " + endpoint + ": " + e.getMessage());
+            }
+        }
+
+        return allResults;
+    }
+
+    private List<DumpMetadata> fetchMetadataFromServer(InetSocketAddress endpoint, int limit) throws IOException {
         try (Socket socket = new Socket(endpoint.getHostString(), endpoint.getPort());
             var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             var writer = new OutputStreamWriter(socket.getOutputStream())) {
@@ -56,17 +78,20 @@ public class MemcachedDumpAdapter implements DumpPort {
                 counter++;
             }
             return results;
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to dump metadata from memcached", e);
         }
     }
 
-    private InetSocketAddress resolveEndpoint() {
+    private Collection<InetSocketAddress> resolveEndpoints() {
         Collection<SocketAddress> servers = memcachedClient.getAvailableServers();
-        return servers.stream()
+        List<InetSocketAddress> endpoints = servers.stream()
             .filter(InetSocketAddress.class::isInstance)
             .map(InetSocketAddress.class::cast)
-            .findFirst()
-            .orElseThrow(() -> new IllegalStateException("No available memcached servers"));
+            .toList();
+        
+        if (endpoints.isEmpty()) {
+            throw new IllegalStateException("No available memcached servers");
+        }
+        
+        return endpoints;
     }
 }
