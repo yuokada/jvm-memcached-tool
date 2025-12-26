@@ -19,6 +19,11 @@ public class DumpUseCase {
     public List<DumpResult> execute(int limit) {
         List<MemcachedPort.DumpMetadata> metadata = memcachedPort.fetchMetadata(limit);
         
+        // Early return if no metadata
+        if (metadata.isEmpty()) {
+            return List.of();
+        }
+        
         // Collect all keys
         List<String> keys = metadata.stream()
             .map(MemcachedPort.DumpMetadata::key)
