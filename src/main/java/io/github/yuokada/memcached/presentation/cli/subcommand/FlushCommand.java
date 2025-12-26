@@ -1,6 +1,6 @@
-package io.github.yuokada.memcached.subcommand;
+package io.github.yuokada.memcached.presentation.cli.subcommand;
 
-import io.github.yuokada.memcached.EntryCommand;
+import io.github.yuokada.memcached.presentation.cli.EntryCommand;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;

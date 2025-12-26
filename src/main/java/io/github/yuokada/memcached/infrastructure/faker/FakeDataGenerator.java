@@ -1,4 +1,4 @@
-package io.github.yuokada.memcached.util;
+package io.github.yuokada.memcached.infrastructure.faker;
 
 import net.datafaker.Faker;
 

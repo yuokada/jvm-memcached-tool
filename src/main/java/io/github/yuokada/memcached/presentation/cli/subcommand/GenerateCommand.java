@@ -1,9 +1,9 @@
-package io.github.yuokada.memcached.subcommand;
+package io.github.yuokada.memcached.presentation.cli.subcommand;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.yuokada.memcached.EntryCommand;
-import io.github.yuokada.memcached.util.FakeDataGenerator;
+import io.github.yuokada.memcached.infrastructure.faker.FakeDataGenerator;
+import io.github.yuokada.memcached.presentation.cli.EntryCommand;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Map;

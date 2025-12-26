@@ -1,10 +1,10 @@
-package io.github.yuokada.memcached;
+package io.github.yuokada.memcached.presentation.cli;
 
-import io.github.yuokada.memcached.subcommand.DumpCommand;
-import io.github.yuokada.memcached.subcommand.FlushCommand;
-import io.github.yuokada.memcached.subcommand.GenerateCommand;
-import io.github.yuokada.memcached.subcommand.KeysCommand;
-import io.github.yuokada.memcached.subcommand.StatsCommand;
+import io.github.yuokada.memcached.presentation.cli.subcommand.DumpCommand;
+import io.github.yuokada.memcached.presentation.cli.subcommand.FlushCommand;
+import io.github.yuokada.memcached.presentation.cli.subcommand.GenerateCommand;
+import io.github.yuokada.memcached.presentation.cli.subcommand.KeysCommand;
+import io.github.yuokada.memcached.presentation.cli.subcommand.StatsCommand;
 import io.quarkus.picocli.runtime.annotations.TopCommand;
 import jakarta.inject.Inject;
 import java.io.IOException;

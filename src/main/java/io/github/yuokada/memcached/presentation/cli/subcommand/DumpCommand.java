@@ -1,6 +1,6 @@
-package io.github.yuokada.memcached.subcommand;
+package io.github.yuokada.memcached.presentation.cli.subcommand;
 
-import io.github.yuokada.memcached.EntryCommand;
+import io.github.yuokada.memcached.presentation.cli.EntryCommand;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

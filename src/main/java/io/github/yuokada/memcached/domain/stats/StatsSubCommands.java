@@ -1,4 +1,4 @@
-package io.github.yuokada.memcached;
+package io.github.yuokada.memcached.domain.stats;
 
 import java.util.List;
 import java.util.stream.Collectors;
