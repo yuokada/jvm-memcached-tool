@@ -55,6 +55,19 @@ Commands:
 
 ## Development
 
+### Run Memcached with Docker
+
+To spin up a local Memcached instance quickly, start the official Docker image:
+
+```shell
+$ docker run -d --rm --name memcached \
+    -p 11211:11211 \
+    memcached:1.6.32-alpine
+
+# Verify the instance via the stats command
+$ java -jar target/memcached-tool.jar stats --host localhost --port 11211
+```
+
 ### 📦 Releasing jvm-memcached-tool to Maven Central
 
 This document describes how to release this library to [Maven Central](https://central.sonatype.com/) using `maven-release-plugin` and `central-publishing-maven-plugin`.
@@ -90,7 +103,6 @@ git reset --hard
 git clean -fd
 git tag -d <TAG: 0.2.1>
 ```
-
 
 ## References
 
