@@ -11,6 +11,7 @@ import java.net.SocketAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -63,6 +64,27 @@ class MemcachedAdapterTest {
         memcachedAdapter.set(key, 60, expectedValue);
 
         assertEquals(expectedValue, memcachedAdapter.get(key));
+    }
+
+    @Test
+    void getBulkRetrievesMultipleValuesInSingleCall() {
+        String key1 = "memcached:bulk1:" + UUID.randomUUID();
+        String key2 = "memcached:bulk2:" + UUID.randomUUID();
+        String key3 = "memcached:bulk3:" + UUID.randomUUID();
+        String value1 = "value1-" + UUID.randomUUID();
+        String value2 = "value2-" + UUID.randomUUID();
+        String value3 = "value3-" + UUID.randomUUID();
+
+        memcachedAdapter.set(key1, 60, value1);
+        memcachedAdapter.set(key2, 60, value2);
+        memcachedAdapter.set(key3, 60, value3);
+
+        Map<String, Object> results = memcachedAdapter.getBulk(List.of(key1, key2, key3));
+
+        assertEquals(3, results.size(), "getBulk should return all three keys");
+        assertEquals(value1, results.get(key1));
+        assertEquals(value2, results.get(key2));
+        assertEquals(value3, results.get(key3));
     }
 
     @Test
