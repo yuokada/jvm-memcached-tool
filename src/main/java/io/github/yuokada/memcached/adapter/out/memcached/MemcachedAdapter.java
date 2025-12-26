@@ -56,46 +56,45 @@ public class MemcachedAdapter extends AbstractMemcachedSocketAdapter implements 
 
     @Override
     public List<DumpMetadata> fetchMetadata(int limit) {
-        return executeCommand("lru_crawler metadump all\r\n", reader -> {
-            List<DumpMetadata> results = new ArrayList<>();
-            int counter = 0;
-            String response;
-            while ((response = reader.readLine()) != null) {
-                if (shouldStop(limit, counter, response)) {
-                    break;
-                }
-                Matcher matcher = METADUMP_PATTERN.matcher(response);
-                if (!matcher.matches()) {
-                    continue;
-                }
+        return processMetadump(limit, response -> {
+            Matcher matcher = METADUMP_PATTERN.matcher(response);
+            if (matcher.matches()) {
                 String key = decodeKey(matcher.group(1));
                 int expiration = Integer.parseInt(matcher.group(2));
-                results.add(new DumpMetadata(key, expiration));
-                counter++;
+                return new DumpMetadata(key, expiration);
             }
-            return results;
+            return null;
         });
     }
 
     @Override
     public List<String> fetchKeys(int limit) {
+        return processMetadump(limit, response -> {
+            if (METADUMP_PATTERN.matcher(response).matches()) {
+                return response;
+            }
+            return null;
+        });
+    }
+
+    private <T> List<T> processMetadump(int limit, java.util.function.Function<String, T> processor) {
         return executeCommand("lru_crawler metadump all\r\n", reader -> {
-            List<String> results = new ArrayList<>();
+            List<T> results = new ArrayList<>();
             int counter = 0;
             String response;
             while ((response = reader.readLine()) != null) {
                 if (shouldStop(limit, counter, response)) {
                     break;
                 }
-                if (METADUMP_PATTERN.matcher(response).matches()) {
-                    results.add(response);
+                T processed = processor.apply(response);
+                if (processed != null) {
+                    results.add(processed);
                     counter++;
                 }
             }
             return results;
         });
     }
-
     private boolean shouldStop(int limit, int counter, String response) {
         return (limit > 0 && counter >= limit) || "END".equals(response);
     }
