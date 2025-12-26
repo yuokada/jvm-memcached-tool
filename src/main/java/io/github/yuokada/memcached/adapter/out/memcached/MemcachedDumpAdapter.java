@@ -43,7 +43,8 @@ public class MemcachedDumpAdapter implements DumpPort {
             }
 
             try {
-                List<DumpMetadata> serverResults = fetchMetadataFromServer(endpoint, limit > 0 ? limit - totalCounter : 0);
+                int serverLimit = limit > 0 ? limit - totalCounter : 0;
+                List<DumpMetadata> serverResults = fetchMetadataFromServer(endpoint, serverLimit);
                 allResults.addAll(serverResults);
                 totalCounter += serverResults.size();
             } catch (IOException e) {
