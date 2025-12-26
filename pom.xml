@@ -4,7 +4,7 @@
 
   <groupId>io.github.yuokada</groupId>
   <artifactId>jvm-memcached-tool</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0-SNAPSHOT</version>
 
   <name>${project.groupId}:${project.artifactId}</name>
   <description>An application like memcached-tool</description>
@@ -35,7 +35,7 @@
     <url>https://github.com/yuokada/jvm-memcached-tool</url>
     <connection>scm:git:git@github.com:yuokada/jvm-memcached-tool.git</connection>
     <developerConnection>scm:git:git@github.com:yuokada/jvm-memcached-tool.git</developerConnection>
-    <tag>0.3.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <licenses>
