@@ -5,13 +5,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import io.github.yuokada.memcached.application.port.MemcachedPort;
 import io.github.yuokada.memcached.bootstrap.MemcachedClientProvider;
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 import net.spy.memcached.MemcachedClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,7 +30,7 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers(disabledWithoutDocker = true)
 class MemcachedAdapterTest {
 
-    private static final String MEMCACHED_IMAGE = "memcached:1.6.24-alpine";
+    private static final String MEMCACHED_IMAGE = "memcached:1.6.32-alpine";
     private static final Integer MEMCACHED_PORT = 11211;
 
     @Container
@@ -93,5 +99,48 @@ class MemcachedAdapterTest {
 
         assertTrue(memcachedAdapter.flush(5));
         assertNull(memcachedAdapter.get(key));
+    }
+
+    @Test
+    void fetchMetadataReturnsKeysWithExpiration() {
+        String key = "memcached:metadata:" + UUID.randomUUID();
+        memcachedAdapter.set(key, 120, "meta-value");
+        assertTrue(
+            awaitCondition(() -> memcachedAdapter.fetchMetadata(50)
+                .stream()
+                .anyMatch(entry -> entry.key().equals(key))),
+            "metadata should include inserted key"
+        );
+    }
+
+    @Test
+    void fetchKeysReturnsRawKeyLines() {
+        String key = "memcached:keys:" + UUID.randomUUID();
+        memcachedAdapter.set(key, 120, "key-value");
+
+        String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8)
+            .replace("+", "%20");
+        assertTrue(
+            awaitCondition(() -> memcachedAdapter.fetchKeys(50)
+                .stream()
+                .anyMatch(line -> line.contains("key=" + encodedKey))),
+            "keys output should contain inserted key"
+        );
+    }
+
+    private boolean awaitCondition(BooleanSupplier condition) {
+        long deadline = System.nanoTime() + Duration.ofSeconds(5).toNanos();
+        while (System.nanoTime() < deadline) {
+            if (condition.getAsBoolean()) {
+                return true;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted while waiting", e);
+            }
+        }
+        return false;
     }
 }
