@@ -1,6 +1,5 @@
 package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
-import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
 import io.github.yuokada.memcached.application.usecase.DumpUseCase;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParentCommand;
 
 @Command(name = "dump")
 public class DumpCommand implements Callable<Integer> {
@@ -69,8 +67,6 @@ public class DumpCommand implements Callable<Integer> {
     }
     */
     private static final Logger logger = LoggerFactory.getLogger(DumpCommand.class);
-    @ParentCommand
-    private EntryCommand entryCommand;
     @Inject
     DumpUseCase dumpUseCase;
 
@@ -96,11 +92,7 @@ public class DumpCommand implements Callable<Integer> {
         }
 
         try {
-            List<DumpUseCase.DumpResult> results = dumpUseCase.execute(
-                entryCommand.configEndpoint,
-                entryCommand.clusterPort,
-                limit
-            );
+            List<DumpUseCase.DumpResult> results = dumpUseCase.execute(limit);
             results.forEach(result -> {
                 String value = result.value();
                 String fmt = String.format("add %s 0 %d %d\n%s",

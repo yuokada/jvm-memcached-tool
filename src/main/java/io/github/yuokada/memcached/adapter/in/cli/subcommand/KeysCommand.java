@@ -1,6 +1,5 @@
 package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
-import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
 import io.github.yuokada.memcached.application.usecase.KeysUseCase;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParentCommand;
 
 @Command(name = "keys")
 public class KeysCommand implements Callable<Integer> {
@@ -37,8 +35,6 @@ public class KeysCommand implements Callable<Integer> {
     */
 
     private static final Logger logger = LoggerFactory.getLogger(KeysCommand.class);
-    @ParentCommand
-    private EntryCommand entryCommand;
     @Inject
     KeysUseCase keysUseCase;
 
@@ -63,11 +59,7 @@ public class KeysCommand implements Callable<Integer> {
         System.out.println(message);
 
         try {
-            List<String> keys = keysUseCase.execute(
-                entryCommand.configEndpoint,
-                entryCommand.clusterPort,
-                limit
-            );
+            List<String> keys = keysUseCase.execute(limit);
             keys.forEach(System.out::println);
             return ExitCode.OK;
         } catch (IllegalStateException e) {
