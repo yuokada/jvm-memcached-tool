@@ -1,27 +1,21 @@
-package io.github.yuokada.memcached.subcommand;
+package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import io.github.yuokada.memcached.EntryCommand;
-import io.github.yuokada.memcached.StatsSubCommands;
-import java.io.IOException;
+import io.github.yuokada.memcached.application.usecase.StatsUseCase;
 import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import net.spy.memcached.MemcachedClient;
+import jakarta.inject.Inject;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
-import picocli.CommandLine.ParentCommand;
 
 @CommandLine.Command(name = "stats", description = "Perform stats command")
 public class StatsCommand implements Callable<Integer> {
-
-    @ParentCommand
-    private EntryCommand entryCommand;
 
     @Option(names = {"--json"},
         description = "Flag to output with JSON format"
@@ -31,10 +25,12 @@ public class StatsCommand implements Callable<Integer> {
     @Parameters(arity = "0", paramLabel = "extra", defaultValue = "")
     String operation;
 
+    @Inject
+    StatsUseCase statsUseCase;
+
     @Override
-    public Integer call() throws IOException {
-        MemcachedClient client = entryCommand.memcachedClient;
-        Map<SocketAddress, Map<String, String>> stats = fetchStats(client, operation);
+    public Integer call() {
+        Map<SocketAddress, Map<String, String>> stats = statsUseCase.execute(operation);
         Objects.requireNonNull(stats);
 
         if (jsonOutputFlag) {
@@ -57,24 +53,4 @@ public class StatsCommand implements Callable<Integer> {
         return 0;
     }
 
-    private Map<SocketAddress, Map<String, String>> fetchStats(
-        MemcachedClient client,
-        String args) {
-        if (args.isEmpty()) {
-            return client.getStats();
-        } else {
-            StatsSubCommands subcommand;
-            try {
-                subcommand = StatsSubCommands.valueOf(args);
-            } catch (IllegalArgumentException e) {
-                List<String> availableCommands = StatsSubCommands.availableCommands();
-                String message = String.format(
-                    "Unsupported extra command: %s\nAvailable commands: %s", args,
-                    String.join(", ", availableCommands)
-                );
-                throw new IllegalArgumentException(message);
-            }
-            return client.getStats(subcommand.name());
-        }
-    }
 }

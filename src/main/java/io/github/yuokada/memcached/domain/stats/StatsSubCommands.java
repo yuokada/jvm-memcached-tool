@@ -1,7 +1,6 @@
-package io.github.yuokada.memcached;
+package io.github.yuokada.memcached.domain.stats;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public enum StatsSubCommands {
@@ -20,6 +19,6 @@ public enum StatsSubCommands {
             sizes,
             items,
             settings
-        ).map(Enum::name).collect(Collectors.toList());
+        ).map(Enum::name).toList();
     }
 }

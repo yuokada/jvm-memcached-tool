@@ -1,0 +1,34 @@
+package io.github.yuokada.memcached.application.usecase;
+
+import io.github.yuokada.memcached.application.port.DumpPort;
+import io.github.yuokada.memcached.application.port.MemcachedPort;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import java.util.List;
+
+@ApplicationScoped
+public class DumpUseCase {
+
+    private final MemcachedPort memcachedPort;
+    private final DumpPort dumpPort;
+
+    @Inject
+    public DumpUseCase(MemcachedPort memcachedPort, DumpPort dumpPort) {
+        this.memcachedPort = memcachedPort;
+        this.dumpPort = dumpPort;
+    }
+
+    public List<DumpResult> execute(int limit) {
+        List<DumpPort.DumpMetadata> metadata = dumpPort.fetchMetadata(limit);
+        return metadata.stream()
+            .map(entry -> {
+                Object value = memcachedPort.get(entry.key());
+                String serialized = value == null ? "" : value.toString();
+                return new DumpResult(entry.key(), entry.expiration(), serialized);
+            })
+            .toList();
+    }
+
+    public record DumpResult(String key, int expiration, String value) {
+    }
+}

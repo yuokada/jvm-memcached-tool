@@ -1,22 +1,14 @@
-package io.github.yuokada.memcached.subcommand;
+package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
-import io.github.yuokada.memcached.EntryCommand;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
-import java.util.ArrayList;
+import io.github.yuokada.memcached.application.usecase.DumpUseCase;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParentCommand;
 
 @Command(name = "dump")
 public class DumpCommand implements Callable<Integer> {
@@ -75,8 +67,8 @@ public class DumpCommand implements Callable<Integer> {
     }
     */
     private static final Logger logger = LoggerFactory.getLogger(DumpCommand.class);
-    @ParentCommand
-    private EntryCommand entryCommand;
+    @Inject
+    DumpUseCase dumpUseCase;
 
     @Option(
         names = {"--limit"}, description = "Number of keys to dump. 0 is no limit.",
@@ -99,76 +91,22 @@ public class DumpCommand implements Callable<Integer> {
             System.err.println(message);
         }
 
-        var serverAddress = entryCommand.configEndpoint;
-        var serverPort = entryCommand.clusterPort;
-        var client = entryCommand.memcachedClient;
-
-        try (Socket socket = new Socket(serverAddress, serverPort)) {
-            var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            var writer = new OutputStreamWriter(socket.getOutputStream());
-
-            String command = "lru_crawler metadump all\r\n";
-            writer.write(command);
-            writer.flush();
-
-            Pattern pattern = Pattern.compile("^key=(\\S+) exp=(-?\\d+) .*");
-
-            var counter = 0;
-            String response;
-            List<DumpObject> list = new ArrayList<>();
-
-            while ((response = reader.readLine()) != null) {
-                if (limit > 0 && counter >= limit || response.equals("END")) {
-                    break;
-                }
-
-                Matcher matcher = pattern.matcher(response);
-                if (matcher.matches()) {
-                    var key = matcher.group(1);
-                    var expiration = Integer.parseInt(matcher.group(2));
-
-                    String vResponse = (String) client.get(key);
-                    // GetFuture<Object> objectGetFuture = client.asyncGet(key);
-                    list.add(new DumpObject(key, expiration, response, vResponse));
-                    counter++;
-                }
-            }
-
-            list.forEach(e -> {
-                String fmt = String.format("add %s 0 %d %d\n%s", e.key, e.expiration,
-                    e.value.length(), e.value);
+        try {
+            List<DumpUseCase.DumpResult> results = dumpUseCase.execute(limit);
+            results.forEach(result -> {
+                String value = result.value();
+                String fmt = String.format("add %s 0 %d %d\n%s",
+                    result.key(),
+                    result.expiration(),
+                    value.length(),
+                    value
+                );
                 System.out.println(fmt);
             });
-
             return ExitCode.OK;
-        } catch (IOException e) {
+        } catch (IllegalStateException e) {
             logger.error(e.getMessage());
             return ExitCode.SOFTWARE;
-        }
-    }
-
-    static class DumpObject {
-
-        String key;
-        Integer expiration;
-        String expression;
-        String value;
-
-        public DumpObject(String key, Integer expiration, String expression, String value) {
-            this.key = key;
-            this.expiration = expiration;
-            this.expression = expression;
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return "DumpObject{" +
-                "key='" + key + '\'' +
-                ", expiration=" + expiration +
-                ", expression='" + expression + '\'' +
-                ", value='" + value + '\'' +
-                '}';
         }
     }
 }

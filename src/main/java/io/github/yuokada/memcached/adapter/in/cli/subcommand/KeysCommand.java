@@ -1,19 +1,14 @@
-package io.github.yuokada.memcached.subcommand;
+package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
-import io.github.yuokada.memcached.EntryCommand;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
+import io.github.yuokada.memcached.application.usecase.KeysUseCase;
+import jakarta.inject.Inject;
+import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.ParentCommand;
 
 @Command(name = "keys")
 public class KeysCommand implements Callable<Integer> {
@@ -40,8 +35,8 @@ public class KeysCommand implements Callable<Integer> {
     */
 
     private static final Logger logger = LoggerFactory.getLogger(KeysCommand.class);
-    @ParentCommand
-    private EntryCommand entryCommand;
+    @Inject
+    KeysUseCase keysUseCase;
 
     @Option(
         names = {"--limit"}, description = "Number of keys to dump. 0 is no limit.",
@@ -52,7 +47,7 @@ public class KeysCommand implements Callable<Integer> {
     private static final String message = "Dumping memcache keys";
 
     @Override
-    public Integer call() throws IOException {
+    public Integer call() {
         if (limit < 0) {
             System.err.println("Limit must be greater than or equal to 0");
             return ExitCode.USAGE;
@@ -63,36 +58,12 @@ public class KeysCommand implements Callable<Integer> {
         }
         System.out.println(message);
 
-        var serverAddress = entryCommand.configEndpoint;
-        var serverPort = entryCommand.clusterPort;
-
-        try (Socket socket = new Socket(serverAddress, serverPort)) {
-            var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            var writer = new OutputStreamWriter(socket.getOutputStream());
-
-            String command = "lru_crawler metadump all\r\n";
-            writer.write(command);
-            writer.flush();
-
-            Pattern pattern = Pattern.compile("^key=(\\S+) exp=(-?\\d+) .*");
-
-            var counter = 0;
-            String response;
-            while ((response = reader.readLine()) != null) {
-                if (limit > 0 && counter >= limit) {
-                    return ExitCode.OK;
-                } else if (response.equals("END")) {
-                    return ExitCode.OK;
-                }
-
-                if (pattern.matcher(response).matches()) {
-                    System.out.println(response);
-                    counter++;
-                }
-            }
+        try {
+            List<String> keys = keysUseCase.execute(limit);
+            keys.forEach(System.out::println);
             return ExitCode.OK;
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IllegalStateException e) {
+            logger.error(e.getMessage());
             return ExitCode.SOFTWARE;
         }
     }
