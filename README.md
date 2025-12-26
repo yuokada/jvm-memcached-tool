@@ -49,6 +49,7 @@ Commands:
   dump
   keys
   stats          Perform stats command
+  sizes          Display item size histogram
   flush          Flush items on memcached
 ```
 

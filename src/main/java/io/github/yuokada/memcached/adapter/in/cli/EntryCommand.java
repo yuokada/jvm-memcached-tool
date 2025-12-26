@@ -5,6 +5,7 @@ import io.github.yuokada.memcached.adapter.in.cli.subcommand.DumpCommand;
 import io.github.yuokada.memcached.adapter.in.cli.subcommand.FlushCommand;
 import io.github.yuokada.memcached.adapter.in.cli.subcommand.GenerateCommand;
 import io.github.yuokada.memcached.adapter.in.cli.subcommand.KeysCommand;
+import io.github.yuokada.memcached.adapter.in.cli.subcommand.SizesCommand;
 import io.github.yuokada.memcached.adapter.in.cli.subcommand.StatsCommand;
 import io.quarkus.picocli.runtime.annotations.TopCommand;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import picocli.CommandLine.Option;
         DumpCommand.class,
         KeysCommand.class,
         StatsCommand.class,
+        SizesCommand.class,
         FlushCommand.class
     },
     mixinStandardHelpOptions = true,

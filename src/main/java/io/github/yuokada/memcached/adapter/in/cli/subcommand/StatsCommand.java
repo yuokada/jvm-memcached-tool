@@ -14,7 +14,10 @@ import picocli.CommandLine;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
-@CommandLine.Command(name = "stats", description = "Perform stats command")
+@CommandLine.Command(
+    name = "stats",
+    description = "Perform stats command. Pass an optional extra argument (items/settings/sizes)"
+)
 public class StatsCommand implements Callable<Integer> {
 
     @Option(names = {"--json"},
@@ -22,7 +25,8 @@ public class StatsCommand implements Callable<Integer> {
     )
     boolean jsonOutputFlag;
 
-    @Parameters(arity = "0", paramLabel = "extra", defaultValue = "")
+    @Parameters(arity = "0", paramLabel = "extra", defaultValue = "",
+        description = "Optional stats scope: items, settings, or sizes")
     String operation;
 
     @Inject
