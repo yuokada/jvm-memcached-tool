@@ -1,4 +1,4 @@
-package io.github.yuokada.memcached.domain.stats;
+package io.github.yuokada.memcached.application.usecase;
 
 import java.util.List;
 import java.util.stream.Stream;

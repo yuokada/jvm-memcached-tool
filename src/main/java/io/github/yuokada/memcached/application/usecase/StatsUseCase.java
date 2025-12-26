@@ -1,7 +1,6 @@
 package io.github.yuokada.memcached.application.usecase;
 
 import io.github.yuokada.memcached.application.port.MemcachedPort;
-import io.github.yuokada.memcached.domain.stats.StatsSubCommands;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.net.SocketAddress;
