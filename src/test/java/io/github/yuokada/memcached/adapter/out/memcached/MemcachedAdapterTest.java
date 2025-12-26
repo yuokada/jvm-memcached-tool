@@ -11,11 +11,13 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 import net.spy.memcached.MemcachedClient;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -103,10 +105,10 @@ class MemcachedAdapterTest {
     void fetchMetadataReturnsKeysWithExpiration() {
         String key = "memcached:metadata:" + UUID.randomUUID();
         memcachedAdapter.set(key, 120, "meta-value");
-
-        List<MemcachedPort.DumpMetadata> metadata = memcachedAdapter.fetchMetadata(50);
         assertTrue(
-            metadata.stream().anyMatch(entry -> entry.key().equals(key)),
+            awaitCondition(() -> memcachedAdapter.fetchMetadata(50)
+                .stream()
+                .anyMatch(entry -> entry.key().equals(key))),
             "metadata should include inserted key"
         );
     }
@@ -116,12 +118,29 @@ class MemcachedAdapterTest {
         String key = "memcached:keys:" + UUID.randomUUID();
         memcachedAdapter.set(key, 120, "key-value");
 
-        List<String> keys = memcachedAdapter.fetchKeys(50);
         String encodedKey = URLEncoder.encode(key, StandardCharsets.UTF_8)
             .replace("+", "%20");
         assertTrue(
-            keys.stream().anyMatch(line -> line.contains("key=" + encodedKey)),
+            awaitCondition(() -> memcachedAdapter.fetchKeys(50)
+                .stream()
+                .anyMatch(line -> line.contains("key=" + encodedKey))),
             "keys output should contain inserted key"
         );
+    }
+
+    private boolean awaitCondition(BooleanSupplier condition) {
+        long deadline = System.nanoTime() + Duration.ofSeconds(5).toNanos();
+        while (System.nanoTime() < deadline) {
+            if (condition.getAsBoolean()) {
+                return true;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("Interrupted while waiting", e);
+            }
+        }
+        return false;
     }
 }
