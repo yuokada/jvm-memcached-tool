@@ -18,15 +18,23 @@ public class FlushCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        boolean result = flushUseCase.execute();
-        if (result) {
-            System.out.printf("Keys on %s:%d are purged!%n",
-                entryCommand.configEndpoint,
-                entryCommand.clusterPort
+        try {
+            boolean result = flushUseCase.execute();
+            if (result) {
+                System.out.printf("Keys on %s:%d are purged!%n",
+                    entryCommand.configEndpoint,
+                    entryCommand.clusterPort
+                );
+                return ExitCode.OK;
+            }
+            System.err.println("Flush command failed. Please retry");
+            return ExitCode.SOFTWARE;
+        } catch (IllegalStateException e) {
+            System.err.printf(
+                "Flush command failed due to an internal error: %s%n",
+                e.getMessage()
             );
-            return ExitCode.OK;
+            return ExitCode.SOFTWARE;
         }
-        System.err.println("Flush command failed. Please retry");
-        return ExitCode.SOFTWARE;
     }
 }
