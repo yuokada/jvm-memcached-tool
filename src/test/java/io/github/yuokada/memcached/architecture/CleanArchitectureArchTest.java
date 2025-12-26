@@ -115,13 +115,10 @@ class CleanArchitectureArchTest {
     // 4b) out adapters should depend on application ports (at least one) – "port implementation" check.
     @Test
     void outAdaptersShouldImplementAPortInterface() {
-        var isPortInterface = new DescribedPredicate<JavaClass>("an interface in application.port") {
-            @Override
-            public boolean test(JavaClass c) {
-                return c.isInterface()
-                    && c.getPackageName().startsWith(BASE + ".application.port");
-            }
-        };
+        DescribedPredicate<JavaClass> isPortInterface = DescribedPredicate
+            .describe("an interface in application.port", c ->
+                c.isInterface()
+                    && c.getPackageName().startsWith(BASE + ".application.port"));
         ArchRule rule =
             classes()
                 .that()
