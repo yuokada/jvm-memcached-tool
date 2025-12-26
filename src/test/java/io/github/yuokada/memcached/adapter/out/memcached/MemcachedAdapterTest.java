@@ -2,6 +2,7 @@ package io.github.yuokada.memcached.adapter.out.memcached;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.yuokada.memcached.bootstrap.MemcachedClientProvider;
@@ -68,5 +69,27 @@ class MemcachedAdapterTest {
             firstServerStats.containsKey("pid"),
             "stats should include a representative metric like pid"
         );
+    }
+
+    @Test
+    void statsSettingsSubcommandReturnsValues() {
+        Map<SocketAddress, Map<String, String>> stats = memcachedAdapter.stats("settings");
+
+        assertFalse(stats.isEmpty(), "stats -- settings should return server information");
+        Map<String, String> firstServerStats = stats.values().iterator().next();
+        assertTrue(
+            firstServerStats.containsKey("maxbytes"),
+            "settings stats should include configuration values"
+        );
+    }
+
+    @Test
+    void flushClearsStoredData() throws Exception {
+        String key = "memcached:flush:" + UUID.randomUUID();
+        memcachedAdapter.set(key, 300, "value");
+        assertEquals("value", memcachedAdapter.get(key));
+
+        assertTrue(memcachedAdapter.flush(5));
+        assertNull(memcachedAdapter.get(key));
     }
 }
