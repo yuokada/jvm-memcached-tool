@@ -28,7 +28,8 @@ import org.testcontainers.utility.DockerImageName;
 @Testcontainers(disabledWithoutDocker = true)
 class MemcachedAdapterTest {
 
-    private static final String MEMCACHED_IMAGE = "memcached:1.6.32-alpine";
+    private static final String MEMCACHED_IMAGE =
+        System.getProperty("memcached.image", "memcached:1.6.32-alpine");
     private static final Integer MEMCACHED_PORT = 11211;
 
     @Container
