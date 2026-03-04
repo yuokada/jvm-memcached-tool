@@ -22,8 +22,8 @@ public class FlushCommand implements Callable<Integer> {
             boolean result = flushUseCase.execute();
             if (result) {
                 System.out.printf("Keys on %s:%d are purged!%n",
-                    entryCommand.configEndpoint,
-                    entryCommand.clusterPort
+                    entryCommand.getConfigEndpoint(),
+                    entryCommand.getClusterPort()
                 );
                 return ExitCode.OK;
             }

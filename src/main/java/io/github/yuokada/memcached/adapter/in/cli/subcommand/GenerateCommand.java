@@ -7,7 +7,6 @@ import io.github.yuokada.memcached.application.usecase.GenerateUseCase;
 import jakarta.inject.Inject;
 import java.net.SocketAddress;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import org.jboss.logging.Logger;
 import picocli.CommandLine;
@@ -42,10 +41,9 @@ public class GenerateCommand implements Callable<Integer> {
     public Integer call() {
         GenerateUseCase.Result result = generateUseCase.execute(itemSize);
         int generatedCount = result.generatedCount();
-        logger.debug(String.format("Number of item size: %d", generatedCount));
+        logger.debugf("Number of item size: %d", generatedCount);
 
         Map<SocketAddress, Map<String, String>> stats = result.stats();
-        Objects.requireNonNull(stats);
         if (jsonOutputFlag) {
             stats.forEach((socketAddress, stat) -> {
                 // filter out only item related stats

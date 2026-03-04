@@ -22,7 +22,7 @@ public class MemcachedClientProvider {
 
     public static MemcachedClient getMemcachedClient(String endpoint, Integer clusterPort)
         throws IOException {
-        logger.debug(String.format("server: %s:%d", endpoint, clusterPort));
+        logger.debugf("server: %s:%d", endpoint, clusterPort);
         InetSocketAddress address = new InetSocketAddress(endpoint, clusterPort);
         MemcachedClient client;
         if (isConfigEndpoint(endpoint)) {
