@@ -2,6 +2,7 @@ package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
 import io.github.yuokada.memcached.application.usecase.StatsUseCase;
 import jakarta.inject.Inject;
 import java.net.SocketAddress;
@@ -10,8 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.ParentCommand;
 
 @CommandLine.Command(
     name = "stats",
@@ -19,7 +22,7 @@ import picocli.CommandLine.Parameters;
 )
 public class StatsCommand implements Callable<Integer> {
 
-    @Option(names = {"--json"},
+    @Option(names = {"-j", "--json"},
         description = "Flag to output with JSON format"
     )
     boolean jsonOutputFlag;
@@ -31,8 +34,16 @@ public class StatsCommand implements Callable<Integer> {
     @Inject
     StatsUseCase statsUseCase;
 
+    @ParentCommand
+    EntryCommand entryCommand;
+
     @Override
     public Integer call() {
+        if (entryCommand != null) {
+            entryCommand.printVerbose(
+                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
+            );
+        }
         Map<SocketAddress, Map<String, String>> stats = statsUseCase.execute(operation);
         if (jsonOutputFlag) {
             Gson gson = new GsonBuilder()
@@ -51,7 +62,7 @@ public class StatsCommand implements Callable<Integer> {
             lines.stream().sorted()
                 .forEach(System.out::println);
         }
-        return 0;
+        return ExitCode.OK;
     }
 
 }

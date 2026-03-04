@@ -57,6 +57,14 @@ public class EntryCommand implements Callable<Integer> {
     public boolean isVerbose() {
         return verbose;
     }
+
+    /** Prints {@code message} to stderr when {@code --verbose} is active, otherwise a no-op. */
+    public void printVerbose(String message) {
+        if (verbose) {
+            System.err.println("[verbose] " + message);
+        }
+    }
+
     @Option(names = {"-V", "--version"},
         versionHelp = true,
         description = "print version information and exit")

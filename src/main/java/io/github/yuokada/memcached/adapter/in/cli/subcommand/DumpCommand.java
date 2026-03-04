@@ -1,5 +1,6 @@
 package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
+import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
 import io.github.yuokada.memcached.application.usecase.DumpUseCase;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.ParentCommand;
 
 @Command(name = "dump")
 public class DumpCommand implements Callable<Integer> {
@@ -70,10 +72,12 @@ public class DumpCommand implements Callable<Integer> {
     @Inject
     DumpUseCase dumpUseCase;
     @Option(
-        names = {"--limit"}, description = "Number of keys to dump. 0 is no limit.",
+        names = {"-l", "--limit"}, description = "Number of keys to dump. 0 is no limit.",
         defaultValue = "0"
     )
     int limit;
+    @ParentCommand
+    EntryCommand entryCommand;
 
     @Override
     public Integer call() {
@@ -82,8 +86,14 @@ public class DumpCommand implements Callable<Integer> {
             return ExitCode.USAGE;
         }
 
+        if (entryCommand != null) {
+            entryCommand.printVerbose(
+                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
+            );
+        }
+
         if (limit > 0) {
-            System.err.println(message.concat(String.format(" (limiting to %d keys)", limit)));
+            System.err.println(message + String.format(" (limiting to %d keys)", limit));
         } else {
             System.err.println(message);
         }

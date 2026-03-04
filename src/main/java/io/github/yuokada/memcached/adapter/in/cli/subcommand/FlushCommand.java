@@ -14,17 +14,21 @@ public class FlushCommand implements Callable<Integer> {
     @Inject
     FlushUseCase flushUseCase;
     @ParentCommand
-    private EntryCommand entryCommand;
+    EntryCommand entryCommand;
 
     @Override
     public Integer call() {
+        if (entryCommand != null) {
+            entryCommand.printVerbose(
+                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
+            );
+        }
         try {
             boolean result = flushUseCase.execute();
             if (result) {
-                System.out.printf("Keys on %s:%d are purged!%n",
-                    entryCommand.getConfigEndpoint(),
-                    entryCommand.getClusterPort()
-                );
+                String host = entryCommand != null ? entryCommand.getConfigEndpoint() : "unknown";
+                int port = entryCommand != null ? entryCommand.getClusterPort() : 0;
+                System.out.printf("Keys on %s:%d are purged!%n", host, port);
                 return ExitCode.OK;
             }
             System.err.println("Flush command failed. Please retry");

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -56,8 +57,8 @@ public abstract class AbstractMemcachedSocketAdapter {
     protected <T> T executeCommand(String command, ResponseProcessor<T> responseProcessor) {
         InetSocketAddress endpoint = resolveEndpoint();
         try (Socket socket = new Socket(endpoint.getHostString(), endpoint.getPort());
-            var reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            var writer = new OutputStreamWriter(socket.getOutputStream())) {
+            var reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+            var writer = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8)) {
 
             writer.write(command);
             writer.flush();

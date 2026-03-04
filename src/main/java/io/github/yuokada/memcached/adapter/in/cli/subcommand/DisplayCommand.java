@@ -2,6 +2,7 @@ package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
 import io.github.yuokada.memcached.application.usecase.DisplayUseCase;
 import io.github.yuokada.memcached.application.usecase.DisplayUseCase.DisplayResult;
 import io.github.yuokada.memcached.application.usecase.DisplayUseCase.SlabSummary;
@@ -11,18 +12,27 @@ import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.ParentCommand;
 
 @Command(name = "display", description = "Display slab statistics")
 public class DisplayCommand implements Callable<Integer> {
 
-    @Option(names = {"--json"}, description = "Output as JSON")
+    @Option(names = {"-j", "--json"}, description = "Output as JSON")
     boolean jsonOutput;
 
     @Inject
     DisplayUseCase displayUseCase;
 
+    @ParentCommand
+    EntryCommand entryCommand;
+
     @Override
     public Integer call() {
+        if (entryCommand != null) {
+            entryCommand.printVerbose(
+                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
+            );
+        }
         try {
             List<DisplayResult> results = displayUseCase.execute();
             if (jsonOutput) {
