@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import java.net.SocketAddress;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.concurrent.Callable;
 import org.jboss.logging.Logger;
 import picocli.CommandLine;
@@ -47,16 +48,19 @@ public class GenerateCommand implements Callable<Integer> {
         Map<SocketAddress, Map<String, String>> stats = result.stats();
         Objects.requireNonNull(stats);
         if (jsonOutputFlag) {
-            stats.forEach((socketAddress, stat) -> {
-                // filter out only item related stats
-                stat.entrySet().removeIf(entry -> !entry.getKey().contains("item"));
-            });
+            Map<SocketAddress, Map<String, String>> filtered = stats.entrySet().stream()
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    e -> e.getValue().entrySet().stream()
+                        .filter(entry -> entry.getKey().contains("item"))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+                ));
 
             Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
                 .serializeNulls()
                 .create();
-            System.out.println(gson.toJson(stats));
+            System.out.println(gson.toJson(filtered));
         } else {
             stats.forEach((socketAddress, stat) -> {
                 stat
