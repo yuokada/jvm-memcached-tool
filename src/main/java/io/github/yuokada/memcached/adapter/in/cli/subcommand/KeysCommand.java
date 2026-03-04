@@ -51,9 +51,10 @@ public class KeysCommand implements Callable<Integer> {
         }
 
         if (limit > 0) {
-            message.concat(String.format(" (limiting to %d keys)", limit));
+            System.err.println(message + String.format(" (limiting to %d keys)", limit));
+        } else {
+            System.err.println(message);
         }
-        System.out.println(message);
 
         try {
             List<String> keys = keysUseCase.execute(limit);

@@ -79,7 +79,7 @@ public class MemcachedAdapter extends AbstractMemcachedSocketAdapter implements 
 
     private <T> List<T> processMetadump(int limit, java.util.function.Function<String, T> processor) {
         return executeCommand("lru_crawler metadump all\r\n", reader -> {
-            List<T> results = new ArrayList<>();
+            List<T> results = limit > 0 ? new ArrayList<>(limit) : new ArrayList<>();
             int counter = 0;
             String response;
             while ((response = reader.readLine()) != null) {
