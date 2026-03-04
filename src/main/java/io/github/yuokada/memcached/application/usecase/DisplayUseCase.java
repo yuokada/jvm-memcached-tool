@@ -5,6 +5,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.net.SocketAddress;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -19,7 +21,8 @@ public class DisplayUseCase {
 
     private static final Pattern ITEMS_PATTERN = Pattern.compile("items:(\\d+):(\\w+)");
     private static final Pattern SLABS_PATTERN = Pattern.compile("(\\d+):(\\w+)");
-    private static final DecimalFormat SIZE_DECIMAL = new DecimalFormat("0.0");
+    private static final DecimalFormat SIZE_DECIMAL =
+        new DecimalFormat("0.0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
 
     private final MemcachedPort memcachedPort;
 
