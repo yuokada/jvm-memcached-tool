@@ -3,6 +3,7 @@ package io.github.yuokada.memcached.application.usecase;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.yuokada.memcached.application.port.MemcachedPort;
 import java.net.InetSocketAddress;
@@ -79,8 +80,8 @@ class StatsUseCaseTest {
             () -> useCase.execute("unknown_cmd")
         );
 
-        assertEquals(true, ex.getMessage().contains("unknown_cmd"));
-        assertEquals(true, ex.getMessage().contains("Available commands"));
+        assertTrue(ex.getMessage().contains("unknown_cmd"));
+        assertTrue(ex.getMessage().contains("Available commands"));
     }
 
     /** Minimal stub that records calls. */

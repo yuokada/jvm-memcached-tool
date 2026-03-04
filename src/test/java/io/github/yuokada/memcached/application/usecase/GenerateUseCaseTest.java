@@ -9,6 +9,8 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,7 @@ class GenerateUseCaseTest {
         GenerateUseCase.Result result = useCase.execute(-10);
 
         assertEquals(2, result.generatedCount());
+        assertEquals(2, port.sets.size());
     }
 
     @Test
@@ -57,9 +60,8 @@ class GenerateUseCaseTest {
 
         useCase.execute(3);
 
-        assertTrue(port.sets.stream().anyMatch(s -> s.key.equals("key_0")));
-        assertTrue(port.sets.stream().anyMatch(s -> s.key.equals("key_1")));
-        assertTrue(port.sets.stream().anyMatch(s -> s.key.equals("key_2")));
+        Set<String> keys = port.sets.stream().map(SetCall::key).collect(Collectors.toSet());
+        assertTrue(keys.containsAll(List.of("key_0", "key_1", "key_2")));
     }
 
     @Test

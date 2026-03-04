@@ -1,6 +1,7 @@
 package io.github.yuokada.memcached.application.usecase;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.github.yuokada.memcached.application.port.MemcachedPort;
 import java.net.SocketAddress;
@@ -50,7 +51,7 @@ class DumpUseCaseTest {
     }
 
     @Test
-    void executeWithNonObjectValueCallsToString() {
+    void executeWithNonStringValueCallsToString() {
         Map<String, Object> store = new HashMap<>();
         store.put("intKey", 12345);
 
@@ -70,7 +71,7 @@ class DumpUseCaseTest {
         FakePort port = new FakePort(List.of(), Map.of());
         DumpUseCase useCase = new DumpUseCase(port);
 
-        assertEquals(List.of(), useCase.execute(10));
+        assertTrue(useCase.execute(10).isEmpty());
     }
 
     static class FakePort implements MemcachedPort {

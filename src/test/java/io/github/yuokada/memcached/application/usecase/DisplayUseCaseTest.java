@@ -56,7 +56,7 @@ class DisplayUseCaseTest {
     }
 
     @Test
-    void executeMarkesSlabAsFullWhenAllChunksUsed() {
+    void executeMarksSlabAsFullWhenAllChunksUsed() {
         FakePort port = new FakePort(
             Map.of(SERVER, Map.of()),
             Map.of(SERVER, Map.of("3:chunk_size", "128", "3:total_pages", "2",
