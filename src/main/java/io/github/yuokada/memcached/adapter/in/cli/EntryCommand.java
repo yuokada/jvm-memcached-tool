@@ -35,16 +35,28 @@ public class EntryCommand implements Callable<Integer> {
     private static final Logger logger = Logger.getLogger(EntryCommand.class);
     @Option(names = {"--host"}, description = "Cluster hostname.", defaultValue = "localhost",
         showDefaultValue = Visibility.ALWAYS)
-    public String configEndpoint;
+    private String configEndpoint;
     @Option(names = {"--port", "-p"}, description = "Cluster port number.", defaultValue = "11211",
         showDefaultValue = Visibility.ALWAYS)
-    public int clusterPort;
+    private int clusterPort;
     @Option(
         names = {"-v", "--verbose"},
         description = "Enable verbose mode.",
         defaultValue = "false"
     )
-    public boolean verbose;
+    private boolean verbose;
+
+    public String getConfigEndpoint() {
+        return configEndpoint;
+    }
+
+    public int getClusterPort() {
+        return clusterPort;
+    }
+
+    public boolean isVerbose() {
+        return verbose;
+    }
     @Option(names = {"-V", "--version"},
         versionHelp = true,
         description = "print version information and exit")

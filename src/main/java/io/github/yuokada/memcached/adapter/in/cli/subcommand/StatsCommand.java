@@ -8,7 +8,6 @@ import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
@@ -35,8 +34,6 @@ public class StatsCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         Map<SocketAddress, Map<String, String>> stats = statsUseCase.execute(operation);
-        Objects.requireNonNull(stats);
-
         if (jsonOutputFlag) {
             Gson gson = new GsonBuilder()
                 .setPrettyPrinting()
