@@ -7,6 +7,7 @@ import java.net.SocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -45,6 +46,11 @@ public class MemcachedAdapter extends AbstractMemcachedSocketAdapter implements 
     @Override
     public Object get(String key) {
         return memcachedClient.get(key);
+    }
+
+    @Override
+    public Map<String, Object> getBulk(Collection<String> keys) {
+        return memcachedClient.getBulk(keys);
     }
 
     @Override

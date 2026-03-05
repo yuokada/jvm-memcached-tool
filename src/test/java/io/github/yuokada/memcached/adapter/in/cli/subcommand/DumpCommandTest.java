@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.github.yuokada.memcached.application.port.MemcachedPort;
 import io.github.yuokada.memcached.application.usecase.DumpUseCase;
 import java.net.SocketAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -56,6 +57,9 @@ class DumpCommandTest {
         @Override public Map<SocketAddress, Map<String, String>> stats(String s) { return Map.of(); }
         @Override public void set(String key, int exp, Object v) {}
         @Override public Object get(String key) { return "value-for-" + key; }
+        @Override public Map<String, Object> getBulk(Collection<String> keys) {
+            return keys.stream().collect(java.util.stream.Collectors.toMap(k -> k, k -> "value-for-" + k));
+        }
         @Override public boolean flush(int t) throws ExecutionException, InterruptedException, TimeoutException { return true; }
         @Override public List<DumpMetadata> fetchMetadata(int l) {
             return List.of(new DumpMetadata("key1", 3600), new DumpMetadata("key2", -1));

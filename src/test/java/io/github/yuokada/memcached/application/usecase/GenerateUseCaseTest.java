@@ -7,6 +7,7 @@ import io.github.yuokada.memcached.application.port.DataGeneratorPort;
 import io.github.yuokada.memcached.application.port.MemcachedPort;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +95,9 @@ class GenerateUseCaseTest {
 
         @Override
         public Object get(String key) { return null; }
+
+        @Override
+        public Map<String, Object> getBulk(Collection<String> keys) { return Map.of(); }
 
         @Override
         public boolean flush(int timeoutSeconds)

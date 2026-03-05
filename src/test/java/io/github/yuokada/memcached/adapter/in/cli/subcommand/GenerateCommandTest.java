@@ -7,6 +7,7 @@ import io.github.yuokada.memcached.application.port.MemcachedPort;
 import io.github.yuokada.memcached.application.usecase.GenerateUseCase;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -52,6 +53,7 @@ class GenerateCommandTest {
         @Override public Map<SocketAddress, Map<String, String>> stats(String s) { return Map.of(); }
         @Override public void set(String key, int exp, Object value) { keys.add(key); }
         @Override public Object get(String key) { return null; }
+        @Override public Map<String, Object> getBulk(Collection<String> ks) { return Map.of(); }
         @Override public boolean flush(int t) throws ExecutionException, InterruptedException, TimeoutException { return true; }
         @Override public List<DumpMetadata> fetchMetadata(int l) { return List.of(); }
         @Override public List<String> fetchKeys(int l) { return List.of(); }

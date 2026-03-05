@@ -1,6 +1,7 @@
 package io.github.yuokada.memcached.application.port;
 
 import java.net.SocketAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -40,6 +41,14 @@ public interface MemcachedPort {
      * Returns the value stored under {@code key}, or {@code null} if absent or expired.
      */
     Object get(String key);
+
+    /**
+     * Returns a map of key-to-value for all supplied {@code keys} that are present in the cache.
+     * Keys that are absent or expired will not appear in the returned map.
+     *
+     * @param keys the keys to fetch
+     */
+    Map<String, Object> getBulk(Collection<String> keys);
 
     /**
      * Flushes all items from the cache and waits up to {@code timeoutSeconds} for confirmation.

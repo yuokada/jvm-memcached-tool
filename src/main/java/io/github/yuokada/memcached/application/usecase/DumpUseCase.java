@@ -4,6 +4,7 @@ import io.github.yuokada.memcached.application.port.MemcachedPort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
+import java.util.Map;
 
 @ApplicationScoped
 public class DumpUseCase {
@@ -17,9 +18,11 @@ public class DumpUseCase {
 
     public List<DumpResult> execute(int limit) {
         List<MemcachedPort.DumpMetadata> metadata = memcachedPort.fetchMetadata(limit);
+        List<String> keys = metadata.stream().map(MemcachedPort.DumpMetadata::key).toList();
+        Map<String, Object> values = memcachedPort.getBulk(keys);
         return metadata.stream()
             .map(entry -> {
-                Object value = memcachedPort.get(entry.key());
+                Object value = values.get(entry.key());
                 String serialized = value == null ? "" : value.toString();
                 return new DumpResult(entry.key(), entry.expiration(), serialized);
             })

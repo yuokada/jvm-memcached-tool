@@ -6,6 +6,7 @@ import io.github.yuokada.memcached.application.port.MemcachedPort;
 import io.github.yuokada.memcached.application.usecase.DisplayUseCase;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -62,6 +63,7 @@ class DisplayCommandTest {
 
         @Override public void set(String key, int exp, Object v) {}
         @Override public Object get(String key) { return null; }
+        @Override public Map<String, Object> getBulk(Collection<String> keys) { return Map.of(); }
         @Override public boolean flush(int t) throws ExecutionException, InterruptedException, TimeoutException { return true; }
         @Override public List<DumpMetadata> fetchMetadata(int l) { return List.of(); }
         @Override public List<String> fetchKeys(int l) { return List.of(); }
