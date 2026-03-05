@@ -13,8 +13,8 @@ import java.util.concurrent.TimeoutException;
  * themselves are; callers should not share a single command execution concurrently.
  *
  * <p>Keys passed to {@link #set} and {@link #get} must be valid Memcached keys
- * (no whitespace, no control characters). Keys returned by {@link #fetchKeys} and
- * {@link #fetchMetadata} may be URL-encoded; callers are responsible for decoding.
+ * (no whitespace, no control characters). Keys returned by {@link #fetchKeys}
+ * may be URL-encoded; callers are responsible for decoding.
  */
 public interface MemcachedPort {
 

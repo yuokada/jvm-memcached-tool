@@ -27,7 +27,7 @@ public class StatsCommand implements Callable<Integer> {
     )
     boolean jsonOutputFlag;
 
-    @Parameters(arity = "0", paramLabel = "extra", defaultValue = "",
+    @Parameters(arity = "0..1", paramLabel = "extra", defaultValue = "",
         description = "Optional stats scope: items, settings, or sizes")
     String operation;
 
@@ -40,29 +40,32 @@ public class StatsCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         if (entryCommand != null) {
-            entryCommand.printVerbose(
-                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
-            );
+            entryCommand.printVerboseConnectionInfo();
         }
-        Map<SocketAddress, Map<String, String>> stats = statsUseCase.execute(operation);
-        if (jsonOutputFlag) {
-            Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .serializeNulls()
-                .create();
-            System.out.println(gson.toJson(stats));
-        } else {
-            List<String> lines = new ArrayList<>();
-            stats.forEach((socketAddress, stat) -> {
-                stat
-                    .forEach((k, v) -> {
-                        lines.add(String.format("%s -> %s", k, v));
-                    });
-            });
-            lines.stream().sorted()
-                .forEach(System.out::println);
+        try {
+            Map<SocketAddress, Map<String, String>> stats = statsUseCase.execute(operation);
+            if (jsonOutputFlag) {
+                Gson gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .serializeNulls()
+                    .create();
+                System.out.println(gson.toJson(stats));
+            } else {
+                List<String> lines = new ArrayList<>();
+                stats.forEach((socketAddress, stat) -> {
+                    stat
+                        .forEach((k, v) -> {
+                            lines.add(String.format("%s -> %s", k, v));
+                        });
+                });
+                lines.stream().sorted()
+                    .forEach(System.out::println);
+            }
+            return ExitCode.OK;
+        } catch (IllegalArgumentException e) {
+            System.err.println(e.getMessage());
+            return ExitCode.USAGE;
         }
-        return ExitCode.OK;
     }
 
 }

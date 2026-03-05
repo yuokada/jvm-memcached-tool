@@ -29,9 +29,7 @@ public class SizesCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         if (entryCommand != null) {
-            entryCommand.printVerbose(
-                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
-            );
+            entryCommand.printVerboseConnectionInfo();
         }
         try {
             List<SizesResult> results = sizesUseCase.execute();

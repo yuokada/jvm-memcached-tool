@@ -65,6 +65,13 @@ public class EntryCommand implements Callable<Integer> {
         }
     }
 
+    /** Prints the connection endpoint to stderr when {@code --verbose} is active. */
+    public void printVerboseConnectionInfo() {
+        if (verbose) {
+            System.err.printf("[verbose] Connecting to %s:%d%n", configEndpoint, clusterPort);
+        }
+    }
+
     @Option(names = {"-V", "--version"},
         versionHelp = true,
         description = "print version information and exit")

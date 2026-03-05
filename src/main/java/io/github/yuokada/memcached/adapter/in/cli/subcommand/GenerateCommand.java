@@ -42,9 +42,7 @@ public class GenerateCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         if (entryCommand != null) {
-            entryCommand.printVerbose(
-                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
-            );
+            entryCommand.printVerboseConnectionInfo();
         }
         GenerateUseCase.Result result = generateUseCase.execute(itemSize);
         int generatedCount = result.generatedCount();

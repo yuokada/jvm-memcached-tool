@@ -55,9 +55,7 @@ public class KeysCommand implements Callable<Integer> {
         }
 
         if (entryCommand != null) {
-            entryCommand.printVerbose(
-                String.format("Connecting to %s:%d", entryCommand.getConfigEndpoint(), entryCommand.getClusterPort())
-            );
+            entryCommand.printVerboseConnectionInfo();
         }
 
         if (limit > 0) {

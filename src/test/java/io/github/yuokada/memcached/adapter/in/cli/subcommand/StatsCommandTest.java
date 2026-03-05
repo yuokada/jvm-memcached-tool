@@ -53,6 +53,15 @@ class StatsCommandTest {
         assertEquals(ExitCode.OK, cmd.call());
     }
 
+    @Test
+    void callReturnsUsageForUnsupportedOperation() throws Exception {
+        StatsCommand cmd = new StatsCommand();
+        cmd.statsUseCase = new StatsUseCase(new StubPort());
+        cmd.operation = "unknown_op";
+
+        assertEquals(ExitCode.USAGE, cmd.call());
+    }
+
     static class StubPort implements MemcachedPort {
         static final SocketAddress ADDR = new InetSocketAddress("localhost", 11211);
 
