@@ -48,10 +48,23 @@ Commands:
   generate, gen  Generate items on memcached!
   dump
   keys
-  stats          Perform stats command
+  stats          Perform stats command. Pass an optional extra argument
+                   (items/settings/sizes)
   sizes          Display item size histogram
   flush          Flush items on memcached
 ```
+
+### Subcommands
+
+| Command | Description | Options |
+|---------|-------------|---------|
+| `display` | Display slab class statistics | `-j, --json` — output as JSON |
+| `generate`, `gen` | Write random items to memcached | `-s, --size` — item size in bytes (0 = random); `-j, --json` — output as JSON |
+| `dump` | Dump all item key-value pairs | `-l, --limit` — max keys to dump (0 = no limit) |
+| `keys` | Dump all keys | `-l, --limit` — max keys to dump (0 = no limit) |
+| `stats [extra]` | Run `stats` command; optional scope: `items`, `settings`, `sizes` | `-j, --json` — output as JSON |
+| `sizes` | Display item size histogram | `-j, --json` — output as JSON |
+| `flush` | Flush (delete) all items on the server | — |
 
 ## Development
 
