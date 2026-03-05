@@ -59,6 +59,7 @@ public class DisplayUseCase {
         return results;
     }
 
+    // Parses "stats items" output: keys look like "items:<slabId>:<metric>"
     private static void populateFromItems(Map<String, String> stats, Map<Integer, MutableSlab> slabs) {
         stats.forEach((key, value) -> {
             Matcher matcher = ITEMS_PATTERN.matcher(key);
@@ -80,6 +81,7 @@ public class DisplayUseCase {
         });
     }
 
+    // Parses "stats slabs" output: keys look like "<slabId>:<metric>"
     private static void populateFromSlabs(Map<String, String> stats, Map<Integer, MutableSlab> slabs) {
         stats.forEach((key, value) -> {
             Matcher matcher = SLABS_PATTERN.matcher(key);

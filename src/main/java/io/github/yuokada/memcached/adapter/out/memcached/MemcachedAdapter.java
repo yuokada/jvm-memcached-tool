@@ -77,6 +77,9 @@ public class MemcachedAdapter extends AbstractMemcachedSocketAdapter implements 
         });
     }
 
+    // Streams the "lru_crawler metadump all" response line by line.
+    // Each line looks like: key=<encoded> exp=<ts> la=<ts> cas=<n> fetch=<yes|no> cls=<n> size=<n>
+    // The response is terminated by a line containing only "END".
     private <T> List<T> processMetadump(int limit, java.util.function.Function<String, T> processor) {
         return executeCommand("lru_crawler metadump all\r\n", reader -> {
             List<T> results = limit > 0 ? new ArrayList<>(limit) : new ArrayList<>();

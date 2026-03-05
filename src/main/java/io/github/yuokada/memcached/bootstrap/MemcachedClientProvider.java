@@ -16,7 +16,8 @@ public class MemcachedClientProvider {
 
     private static final Logger logger = Logger.getLogger(MemcachedClientProvider.class);
 
-    private static boolean isConfigEndpoint(String host) {
+    // Package-private for unit testing
+    static boolean isConfigEndpoint(String host) {
         return host.contains(".cfg.");
     }
 

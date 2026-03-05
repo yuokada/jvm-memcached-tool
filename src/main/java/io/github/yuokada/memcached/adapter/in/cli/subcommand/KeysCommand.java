@@ -1,5 +1,6 @@
 package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
+import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
 import io.github.yuokada.memcached.application.usecase.KeysUseCase;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.jboss.logging.Logger;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.ParentCommand;
 
 @Command(name = "keys")
 public class KeysCommand implements Callable<Integer> {
@@ -38,16 +40,22 @@ public class KeysCommand implements Callable<Integer> {
     @Inject
     KeysUseCase keysUseCase;
     @Option(
-        names = {"--limit"}, description = "Number of keys to dump. 0 is no limit.",
+        names = {"-l", "--limit"}, description = "Number of keys to dump. 0 is no limit.",
         defaultValue = "0"
     )
     int limit;
+    @ParentCommand
+    EntryCommand entryCommand;
 
     @Override
     public Integer call() {
         if (limit < 0) {
             System.err.println("Limit must be greater than or equal to 0");
             return ExitCode.USAGE;
+        }
+
+        if (entryCommand != null) {
+            entryCommand.printVerboseConnectionInfo();
         }
 
         if (limit > 0) {

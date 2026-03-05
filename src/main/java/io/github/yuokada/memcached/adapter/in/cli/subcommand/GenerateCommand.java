@@ -11,6 +11,7 @@ import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
 import picocli.CommandLine;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.ParentCommand;
 
@@ -25,21 +26,24 @@ public class GenerateCommand implements Callable<Integer> {
     @Inject
     GenerateUseCase generateUseCase;
     @Option(
-        names = {"--size"}, description = "item size to write. 0 is random size",
+        names = {"-s", "--size"}, description = "item size to write. 0 is random size",
         defaultValue = "0"
     )
     int itemSize;
     @Option(names = {"--help", "-h"}, usageHelp = true)
     boolean help;
-    @Option(names = {"--json"},
+    @Option(names = {"-j", "--json"},
         description = "Flag to output with JSON format"
     )
     boolean jsonOutputFlag;
     @ParentCommand
-    private EntryCommand entryCommand;
+    EntryCommand entryCommand;
 
     @Override
     public Integer call() {
+        if (entryCommand != null) {
+            entryCommand.printVerboseConnectionInfo();
+        }
         GenerateUseCase.Result result = generateUseCase.execute(itemSize);
         int generatedCount = result.generatedCount();
         logger.debugf("Number of item size: %d", generatedCount);
@@ -70,6 +74,6 @@ public class GenerateCommand implements Callable<Integer> {
             });
         }
 
-        return 0;
+        return ExitCode.OK;
     }
 }

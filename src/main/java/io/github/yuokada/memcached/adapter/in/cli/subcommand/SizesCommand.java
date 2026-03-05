@@ -2,6 +2,7 @@ package io.github.yuokada.memcached.adapter.in.cli.subcommand;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.github.yuokada.memcached.adapter.in.cli.EntryCommand;
 import io.github.yuokada.memcached.application.usecase.SizesUseCase;
 import io.github.yuokada.memcached.application.usecase.SizesUseCase.SizeCount;
 import io.github.yuokada.memcached.application.usecase.SizesUseCase.SizesResult;
@@ -11,18 +12,25 @@ import java.util.concurrent.Callable;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
+import picocli.CommandLine.ParentCommand;
 
 @Command(name = "sizes", description = "Display item size histogram")
 public class SizesCommand implements Callable<Integer> {
 
-    @Option(names = {"--json"}, description = "Output as JSON")
+    @Option(names = {"-j", "--json"}, description = "Output as JSON")
     boolean jsonOutput;
 
     @Inject
     SizesUseCase sizesUseCase;
 
+    @ParentCommand
+    EntryCommand entryCommand;
+
     @Override
     public Integer call() {
+        if (entryCommand != null) {
+            entryCommand.printVerboseConnectionInfo();
+        }
         try {
             List<SizesResult> results = sizesUseCase.execute();
             if (jsonOutput) {
