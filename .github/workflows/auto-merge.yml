@@ -17,3 +17,12 @@ jobs:
         if: steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # renovate-merge:
+  #   runs-on: ubuntu-latest
+  #   if: github.actor == 'renovate[bot]'
+  #   steps:
+  #     - name: Enable Pull Request Automerge
+  #       run: gh pr merge --squash --auto "${{ github.event.pull_request.html_url }}"
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
