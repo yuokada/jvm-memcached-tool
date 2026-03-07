@@ -9,7 +9,8 @@ on:
     tags:
       - '[v0-9]+.*'
 jobs:
-  build:
+  publish:
+    name: Build and publish
     runs-on: ubuntu-latest
     permissions:
       contents: read
