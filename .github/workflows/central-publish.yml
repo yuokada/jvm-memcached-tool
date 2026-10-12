@@ -22,11 +22,13 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        server-id: central
-        server-username: CENTRAL_USERNAME
-        server-password: CENTRAL_PASSWORD
+        server-id: central-portal
+        server-username-env-var: CENTRAL_USERNAME
+        server-password-env-var: CENTRAL_PASSWORD
+        mvn-repositories: |
+          central-portal:https://central.sonatype.com/repository/maven-snapshots/:true
         gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
-        gpg-passphrase: GPG_PASSPHRASE
+        gpg-passphrase-env-var: GPG_PASSPHRASE
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
     - name: Build with Maven
